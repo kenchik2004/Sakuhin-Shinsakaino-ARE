@@ -1,0 +1,67 @@
+root
+|-----CharacterStatus
+|-----RLyeh::DicePair
+|-----Scene
+|        |-----SceneShader
+|        |-----RLyeh::SceneTitle
+|        |-----RLyeh::DiceScene
+|        |-----NetWorkTest::NetWorkSampleScene
+|        |-----AmeGame::SceneAme
+|        end_of_node
+|        
+|-----Object
+|        |-----UIObject
+|        |        |-----TextObject
+|        |        |-----ButtonObject
+|        |        end_of_node
+|        |        
+|        |-----GameObject
+|        |        |-----AmeGame::OnmyouDamaObject
+|        |        |-----AmeGame::TreeObject
+|        |        |-----AmeGame::FadeInOutObject
+|        |        |-----RLyeh::DiceBase
+|        |        |        |-----RLyeh::DiceD8
+|        |        |        |-----RLyeh::DiceD6
+|        |        |        |-----RLyeh::DiceD4
+|        |        |        |-----RLyeh::DiceD20
+|        |        |        |-----RLyeh::DiceD12
+|        |        |        |-----RLyeh::DiceD10
+|        |        |        end_of_node
+|        |        |        
+|        |        |-----RLyeh::CardBase
+|        |        |        |-----RLyeh::CardUnpu
+|        |        |        |-----RLyeh::CardShinsoku
+|        |        |        |-----RLyeh::CardFist
+|        |        |        |-----RLyeh::CardDoman
+|        |        |        end_of_node
+|        |        |        
+|        |        |-----AmeGame::IventManager
+|        |        |-----AmeGame::Ivent
+|        |        |-----CameraObject
+|        |        |-----AmeGame::AmePlayer
+|        |        |-----AmeGame::AmeManager
+|        |        |-----RLyeh::InputManager
+|        |        end_of_node
+|        |        
+|        end_of_node
+|        
+|-----Component
+|        |-----Animator
+|        |-----Button
+|        |-----Text
+|        |-----AudioPlayer
+|        |-----Collider
+|        |        |-----BoxCollider
+|        |        |-----MeshCollider
+|        |        |-----ConvexMeshCollider
+|        |        |-----SphereCollider
+|        |        |-----CapsuleCollider
+|        |        end_of_node
+|        |        
+|        |-----RigidBody
+|        |-----ModelRenderer
+|        |-----Transform
+|        end_of_node
+|        
+end_of_node
+

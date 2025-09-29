@@ -1,0 +1,279 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\System\Main.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\SceneManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Time.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Object.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Scene.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\Transform.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Component.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Float2.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Float3.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Input.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Exception.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\Collider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\BoxCollider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\CapsuleCollider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\SphereCollider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\RigidBody.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\PhysicsManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\typedef.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\MeshCollider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\ModelRenderer.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\DontDestroyOnLoadScene.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\ModelManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\ConvexMeshCollider.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\Animator.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Color.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\AudioManager.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\AudioPlayer.cpp">
+      <Filter>System\Compnents</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\AudioListener.cpp" />
+    <ClCompile Include="src\System\Shader.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\FileWatcher.cpp">
+      <Filter>System</Filter>
+    </ClCompile>
+    <ClCompile Include="src\System\Components\Camera.cpp" />
+    <ClCompile Include="src\Game\Managers\InputManager.cpp" />
+    <ClCompile Include="src\System\TextureManager.cpp" />
+    <ClCompile Include="src\System\IniFileManager.cpp" />
+    <ClCompile Include="src\System\Random.cpp" />
+    <ClCompile Include="src\System\Objects\CameraObject.cpp" />
+    <ClCompile Include="src\System\Objects\ButtonObject.cpp" />
+    <ClCompile Include="src\System\Components\Text.cpp" />
+    <ClCompile Include="src\System\Components\Button.cpp" />
+    <ClCompile Include="src\System\Objects\TextObject.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardBase.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardDoman.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardFist.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardShinsoku.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Cards\CardUnpu.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceBase.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD4.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD6.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD8.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD10.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD12.cpp" />
+    <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD20.cpp" />
+    <ClCompile Include="src\Game\Scenes\RLyeh\DiceScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\RLyeh\SceneTitle.cpp" />
+    <ClCompile Include="src\Game\Utilitys\DicePair.cpp" />
+    <ClCompile Include="src\Game\Utilitys\RLyeh\CharacterStatus.cpp" />
+    <ClCompile Include="src\Game\Scenes\AmeGame\SceneAme.cpp" />
+    <ClCompile Include="src\Game\Objects\AmeGame\AmeManager.cpp" />
+    <ClCompile Include="src\Game\Objects\AmeGame\AmePlayer.cpp" />
+    <ClCompile Include="src\Game\Objects\AmeGame\Ivent.cpp" />
+    <ClCompile Include="src\Game\Objects\AmeGame\IventManager.cpp" />
+    <ClCompile Include="src\Game\Scenes\Shader\SceneShader.cpp" />
+    <ClCompile Include="src\Game\Managers\NetWorkManagerBase.cpp" />
+    <ClCompile Include="src\Game\Managers\NetWorkManager_Server.cpp" />
+    <ClCompile Include="src\Game\Managers\NetWorkManager_Client.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene.cpp" />
+    <ClCompile Include="src\Audio\WinMMRecorder.cpp" />
+    <ClCompile Include="src\Audio\WinMMWavePlayer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\System\Main.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\SceneManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Time.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\precompile.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Object.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Scene.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\Transform.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Component.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Float3.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Float2.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Input.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\typedef.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Exception.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\Collider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\BoxCollider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\SphereCollider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\CapsuleCollider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\RigidBody.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\PhysicsManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\MeshCollider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\ModelRenderer.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\DontDestroyOnLoadScene.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\ModelManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\ConvexMeshCollider.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\Animator.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Color.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\AudioManager.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\AudioPlayer.h">
+      <Filter>System\Compnents</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\AudioListener.h" />
+    <ClInclude Include="src\System\Shader.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\FileWatcher.h">
+      <Filter>System</Filter>
+    </ClInclude>
+    <ClInclude Include="src\System\Components\Camera.h" />
+    <ClInclude Include="src\Game\Managers\InputManager.h" />
+    <ClInclude Include="src\System\TextureManager.h" />
+    <ClInclude Include="src\System\IniFileManager.h" />
+    <ClInclude Include="src\System\Random.h" />
+    <ClInclude Include="src\System\Objects\CameraObject.h" />
+    <ClInclude Include="src\System\Objects\ButtonObject.h" />
+    <ClInclude Include="src\System\Components\Text.h" />
+    <ClInclude Include="src\System\Components\Button.h" />
+    <ClInclude Include="src\System\Objects\TextObject.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardBase.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardDoman.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardFist.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardShinsoku.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Cards\CardUnpu.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceBase.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD4.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD6.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD8.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD10.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD12.h" />
+    <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD20.h" />
+    <ClInclude Include="src\Game\Scenes\RLyeh\DiceScene.h" />
+    <ClInclude Include="src\Game\Scenes\RLyeh\SceneTitle.h" />
+    <ClInclude Include="src\Game\Utilitys\DicePair.h" />
+    <ClInclude Include="src\Game\Utilitys\RLyeh\CharacterStatus.h" />
+    <ClInclude Include="src\Game\Scenes\AmeGame\SceneAme.h" />
+    <ClInclude Include="src\Game\Objects\AmeGame\AmeManager.h" />
+    <ClInclude Include="src\Game\Objects\AmeGame\AmePlayer.h" />
+    <ClInclude Include="src\Game\Objects\AmeGame\Ivent.h" />
+    <ClInclude Include="src\Game\Objects\AmeGame\IventManager.h" />
+    <ClInclude Include="src\Game\Scenes\Shader\SceneShader.h" />
+    <ClInclude Include="src\Game\Managers\NetWorkManagerBase.h" />
+    <ClInclude Include="src\Game\Managers\NetWorkManager_Server.h" />
+    <ClInclude Include="src\Game\Managers\NetWorkManager_Client.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene.h" />
+    <ClInclude Include="src\Audio\WinMMRecorder.h" />
+    <ClInclude Include="src\Audio\WinMMWavePlayer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="System">
+      <UniqueIdentifier>{53df3da8-cc69-45bf-932d-e1a936ddd2ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Compnents">
+      <UniqueIdentifier>{cc4430c4-ef78-48cf-a93a-2312d026983d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System\Objects">
+      <UniqueIdentifier>{7afccf8f-4129-4764-91c0-54c2ad6a030b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{4a67c7c6-df48-4812-8203-4b8003926a6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{9e7682ef-6479-4955-923f-a52f497c24cd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
