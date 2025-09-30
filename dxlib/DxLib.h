@@ -2,7 +2,7 @@
 // 
 // 		ＤＸライブラリ		ヘッダファイル
 // 
-// 				Ver 3.24d
+// 				Ver 3.24f
 // 
 // -------------------------------------------------------------------------------
 
@@ -12,24 +12,9 @@
 #include "DxCompileConfig.h"
 
 // ＤＸライブラリのバージョン
-#define DXLIB_VERSION 0x324d
-#define DXLIB_VERSION_STR_T _T( "3.24d" )
-#define DXLIB_VERSION_STR_W    L"3.24d"
-
-// 設定 -----------------------------------------------------------------------
-
-// ＤＸライブラリに必要な lib ファイルを、プロジェクトのカレントフォルダや
-// コンパイラのデフォルト LIB パスに設定せずに使用される場合は以下の
-// コメントを外してください
-//#define DX_LIB_NOT_DEFAULTPATH
-
-#ifndef DX_MAKE
-
-// 描画関連の関数を一切使用されない場合は以下のコメントを外して下さい
-//#define DX_NOTUSE_DRAWFUNCTION
-
-#endif // DX_MAKE
-
+#define DXLIB_VERSION 0x324f
+#define DXLIB_VERSION_STR_T _T( "3.24f" )
+#define DXLIB_VERSION_STR_W    L"3.24f"
 
 // 定義---------------------------------------------------------------------------
 
@@ -104,7 +89,7 @@
 #define DX_DEFAULT_FONT_HANDLE						(-2)				// デフォルトフォントを示す値
 
 #define DEFAULT_FONT_SIZE							(16)				// フォントのデフォルトのサイズ
-#define DEFAULT_FONT_THINCK							(6)					// フォントのデフォルトの太さ
+#define DEFAULT_FONT_THICKNESS						(6)					// フォントのデフォルトの太さ
 #define DEFAULT_FONT_TYPE							( DX_FONTTYPE_NORMAL )	// フォントのデフォルトの形態
 #define DEFAULT_FONT_EDGESIZE						(1)					// フォントのデフォルトの太さ
 
@@ -1883,7 +1868,7 @@ typedef struct tagXINPUT_STATE
 	short					ThumbLY ;						// 左スティックの縦軸値( -32768 ～ 32767 )
 	short					ThumbRX ;						// 右スティックの横軸値( -32768 ～ 32767 )
 	short					ThumbRY ;						// 右スティックの縦軸値( -32768 ～ 32767 )
-} XINPUT_STATE_ ;
+} XINPUT_STATE ;
 
 // タッチパネルの１箇所分のタッチの情報
 typedef struct tagTOUCHINPUTPOINT
@@ -2449,8 +2434,6 @@ extern	int			GetOneChar(			TCHAR *CharBuffer, int DeleteFlag ) ;			// 文字コ�
 extern	int			GetOneCharWait(		TCHAR *CharBuffer, int DeleteFlag ) ;			// 文字コードバッファに溜まったデータから１文字分取得する、バッファに何も文字コードがない場合は文字コードがバッファに一文字分溜まるまで待つ
 extern	int			GetCtrlCodeCmp(		TCHAR Char ) ;									// 指定の文字コードがアスキーコントロールコードか調べる
 
-#endif // DX_NON_INPUTSTRING
-
 #ifndef DX_NON_KEYEX
 
 extern	int			DrawIMEInputString(				int x, int y,                                 int SelectStringNum , int DrawCandidateList DEFAULTPARAM( = TRUE ) ) ;	// 画面上に入力中の文字列を描画する
@@ -2461,6 +2444,8 @@ extern	int			SetInputStringMaxLengthIMESync(	int Flag ) ;							// ＩＭＥで�
 extern	int			SetIMEInputStringMaxLength(		int Length ) ;							// ＩＭＥで一度に入力できる最大文字数を設定する( 0:制限なし  1以上:指定の文字数で制限 )
 
 #endif // DX_NON_KEYEX
+
+#endif // DX_NON_INPUTSTRING
 
 extern	int			GetStringPoint(				const TCHAR *String,                      int Point ) ;		// 全角文字、半角文字入り乱れる中から指定の文字数での半角文字数を得る
 extern	int			GetStringPointWithStrLen(	const TCHAR *String, size_t StringLength, int Point ) ;		// 全角文字、半角文字入り乱れる中から指定の文字数での半角文字数を得る
@@ -2480,6 +2465,8 @@ extern	int			GetObtainsStringCharPosition_CharClip(	int x, int y, int AddY, cons
 extern	int			GetObtainsStringCharPosition_WordClip(	int x, int y, int AddY, const TCHAR *String, int StrLen, int *PosX, int *PosY, int FontHandle DEFAULTPARAM( = -1 ) , int *LineCount DEFAULTPARAM( = NULL ) ) ;		// 描画可能領域に収まるように改行しながら文字列を描画した場合の文字列の末端の座標を取得する( クリップが単語単位 )
 #endif // DX_NON_FONT
 extern	int			DrawObtainsBox(					int x1, int y1, int x2, int y2, int AddY, unsigned int Color, int FillFlag ) ;																																										// 描画可能領域に収まるように補正を加えながら矩形を描画
+
+#ifndef DX_NON_INPUTSTRING
 
 #ifndef DX_NON_KEYEX
 
@@ -2530,6 +2517,7 @@ extern	int			GetKeyInputCursorPosition(		int InputHandle ) ;																				
 
 #endif // DX_NON_KEYEX
 
+#endif // DX_NON_INPUTSTRING
 
 
 
@@ -2614,7 +2602,7 @@ extern	int			GetJoypadAnalogInputRight(				int *XBuf, int *YBuf, int InputType )
 extern	int			GetJoypadDirectInputState(				int InputType, DINPUT_JOYSTATE *DInputState ) ;							// DirectInput から得られるジョイパッドの生のデータを取得する( DX_INPUT_KEY や DX_INPUT_KEY_PAD1 など、キーボードが絡むタイプを InputType に渡すとエラーとなり -1 を返す )
 extern	int			CheckJoypadXInput(						int InputType ) ;														// 指定の入力デバイスが XInput に対応しているかどうかを取得する( 戻り値  TRUE:XInput対応の入力デバイス  FALSE:XInput非対応の入力デバイス   -1:エラー )( DX_INPUT_KEY や DX_INPUT_KEY_PAD1 など、キーボードが絡むタイプを InputType に渡すとエラーとなり -1 を返す )
 extern	int			GetJoypadType(							int InputType ) ;														// ジョイパッドのタイプを取得する( 戻り値  -1:エラー  0以上:ジョイパッドタイプ( DX_PADTYPE_XBOX_360 など ) )
-extern	int			GetJoypadXInputState(					int InputType, XINPUT_STATE_ *XInputState ) ;							// XInput から得られる入力デバイス( Xbox360コントローラ等 )の生のデータを取得する( XInput非対応のパッドの場合はエラーとなり -1 を返す、DX_INPUT_KEY や DX_INPUT_KEY_PAD1 など、キーボードが絡むタイプを InputType に渡すとエラーとなり -1 を返す )
+extern	int			GetJoypadXInputState(					int InputType, XINPUT_STATE *XInputState ) ;							// XInput から得られる入力デバイス( Xbox360コントローラ等 )の生のデータを取得する( XInput非対応のパッドの場合はエラーとなり -1 を返す、DX_INPUT_KEY や DX_INPUT_KEY_PAD1 など、キーボードが絡むタイプを InputType に渡すとエラーとなり -1 を返す )
 extern	int			SetJoypadInputToKeyInput(				int InputType, int PadInput, int KeyInput1, int KeyInput2 DEFAULTPARAM( = -1 ) , int KeyInput3 DEFAULTPARAM( = -1 ) , int KeyInput4 DEFAULTPARAM( = -1 )  ) ; // ジョイパッドの入力に対応したキーボードの入力を設定する( InputType:設定を変更するパッドの識別子( DX_INPUT_PAD1等 )　　PadInput:設定を変更するパッドボタンの識別子( PAD_INPUT_1 等 )　　KeyInput1:PadInput を押下したことにするキーコード( KEY_INPUT_A など )その１　　KeyInput2:その２、-1で設定なし　　KeyInput3:その３、-1で設定なし　　KeyInput4:その４、-1で設定なし )
 extern	int			SetJoypadDeadZone(						int InputType, double Zone ) ;											// ジョイパッドの無効ゾーンの設定を行う( InputType:設定を変更するパッドの識別子( DX_INPUT_PAD1等 )   Zone:新しい無効ゾーン( 0.0 ～ 1.0 )、デフォルト値は 0.35 )
 extern	double		GetJoypadDeadZone(						int InputType ) ;														// ジョイパッドの無効ゾーンの設定を取得する( InputType:設定を変更するパッドの識別子( DX_INPUT_PAD1等 )   戻り値:無効ゾーン( 0.0 ～ 1.0 ) )
@@ -2778,7 +2766,7 @@ extern	int			GetCreateGraphInitGraphDelete(				void ) ;										// 作成する
 extern	int			SetCreateGraphHandle(						int GrHandle ) ;								// 作成するグラフィックハンドルのハンドル値を設定する、０以下の値を渡すと設定解除( 存在しないグラフィックハンドルの値の場合のみ有効 )
 extern	int			GetCreateGraphHandle(						void ) ;										// 作成するグラフィックハンドルのハンドル値を取得する
 extern	int			SetCreateDivGraphHandle(					const int *HandleArray, int HandleNum ) ;		// 作成するグラフィックハンドルのハンドル値を設定する、LoadDivGraph 等の分割画像読み込み用、HandleArray に NULL を渡すと設定解除( 存在しないグラフィックハンドルの値の場合のみ有効 )
-extern	int			GetCreateDivGraphHandle(					int *HandleArray ) ;							// 作成するグラフィックハンドルのハンドル値を取得する、LoadDivGraph 等の分割画像読み込み用、戻り値は SetCreateDivGraphHandle の引数 HandleNum に渡した値、HandleArray を NULL にすることが可能
+extern	int			GetCreateDivGraphHandle(					int *HandleArray ) ;							// 作成するグラフィックハンドルのハンドル値を取得する、LoadDivGraph 等の分割画像読み込み用、戻り値は SetCreateDivGraphHandle の引数 HandleNum に渡した値、HandleArray は NULL でも可
 extern	int			SetDrawValidGraphCreateFlag(				int Flag ) ;									// SetDrawScreen に引数として渡せる( 描画対象として使用できる )グラフィックハンドルを作成するかどうかを設定する( TRUE:描画可能グラフィックハンドルを作成する  FLASE:通常のグラフィックハンドルを作成する( デフォルト ) )
 extern	int			GetDrawValidGraphCreateFlag(				void ) ;										// SetDrawScreen に引数として渡せる( 描画対象として使用できる )グラフィックハンドルを作成するかどうかを設定を取得する
 extern	int			SetDrawValidFlagOf3DGraph(					int Flag ) ;									// SetDrawValidGraphCreateFlag の旧名称
@@ -2869,10 +2857,10 @@ extern	int			ResetGraphPalette(				int GrHandle ) ;																		// SetGraph
 // 図形描画関数
 extern	int			DrawLine(         int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int   Thickness DEFAULTPARAM( = 1 )    ) ;							// 線を描画する
 extern	int			DrawLineAA(       float x1, float y1, float x2, float y2,                                         unsigned int Color, float Thickness DEFAULTPARAM( = 1.0f ) ) ;							// 線を描画する( アンチエイリアス付き )
-extern	int			DrawBox(          int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int FillFlag ) ;														// 四角形を描画する
+extern	int			DrawBox(          int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int FillFlag, int   LineThickness DEFAULTPARAM( = 1 )    ) ;			// 四角形を描画する
 extern	int			DrawBoxAA(        float x1, float y1, float x2, float y2,                                         unsigned int Color, int FillFlag, float LineThickness DEFAULTPARAM( = 1.0f ) ) ;			// 四角形を描画する( アンチエイリアス付き )
 extern	int			DrawFillBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color ) ;																	// 中身を塗りつぶす四角形を描画する
-extern	int			DrawLineBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color ) ;																	// 枠だけの四角形の描画 する
+extern	int			DrawLineBox(      int   x1, int   y1, int   x2, int   y2,                                         unsigned int Color, int LineThickness DEFAULTPARAM( = 1 ) ) ;								// 枠だけの四角形の描画 する
 extern	int			DrawCircle(       int   x,  int   y,  int   r,                                                    unsigned int Color, int FillFlag DEFAULTPARAM( = TRUE ), int   LineThickness DEFAULTPARAM( = 1 )    ) ;	// 円を描画する
 extern	int			DrawCircleAA(     float x,  float y,  float r,            int posnum,                             unsigned int Color, int FillFlag DEFAULTPARAM( = TRUE ), float LineThickness DEFAULTPARAM( = 1.0f ), double Angle DEFAULTPARAM( = 0.0 ) ) ;	// 円を描画する( アンチエイリアス付き )
 extern	int			DrawOval(         int   x,  int   y,  int   rx, int   ry,                                         unsigned int Color, int FillFlag,        int   LineThickness DEFAULTPARAM( = 1 )    ) ;	// 楕円を描画する
@@ -2903,12 +2891,16 @@ extern	int			DrawTriangle3DD( VECTOR_D Pos1,   VECTOR_D Pos2, VECTOR_D Pos3,    
 extern	int			DrawCube3D(      VECTOR   Pos1,   VECTOR   Pos2,                            unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの立方体を描画する
 extern	int			DrawCube3DD(     VECTOR_D Pos1,   VECTOR_D Pos2,                            unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの立方体を描画する
 extern	int			DrawCubeSet3D(   CUBEDATA *CubeDataArray, int Num, int FillFlag ) ;																				// ３Ｄの立方体の集合を描画する
-extern	int			DrawSphere3D(    VECTOR   CenterPos,                  float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの球体を描画する
-extern	int			DrawSphere3DD(   VECTOR_D CenterPos,                  double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの球体を描画する
-extern	int			DrawCapsule3D(   VECTOR   Pos1,   VECTOR   Pos2,      float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄのカプセルを描画する
-extern	int			DrawCapsule3DD(  VECTOR_D Pos1,   VECTOR_D Pos2,      double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄのカプセルを描画する
-extern	int			DrawCone3D(      VECTOR   TopPos, VECTOR   BottomPos, float  r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの円錐を描画する
-extern	int			DrawCone3DD(     VECTOR_D TopPos, VECTOR_D BottomPos, double r, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの円錐を描画する
+extern	int			DrawSphere3D(    VECTOR   CenterPos,                  float  r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの球体を描画する
+extern	int			DrawSphere3DD(   VECTOR_D CenterPos,                  double r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの球体を描画する
+extern	int			DrawCapsule3D(   VECTOR   Pos1,   VECTOR   Pos2,      float  r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄのカプセルを描画する
+extern	int			DrawCapsule3DD(  VECTOR_D Pos1,   VECTOR_D Pos2,      double r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄのカプセルを描画する
+extern	int			DrawCylinder3D(  VECTOR   Pos1,   VECTOR   Pos2,      float  r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの円柱を描画する
+extern	int			DrawCylinder3DD( VECTOR_D Pos1,   VECTOR_D Pos2,      double r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの円柱を描画する
+extern	int			DrawTube3D(      VECTOR   Pos1,   VECTOR   Pos2,      float  r1, float  r2, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの筒を描画する
+extern	int			DrawTube3DD(     VECTOR_D Pos1,   VECTOR_D Pos2,      double r1, double r2, int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの筒を描画する
+extern	int			DrawCone3D(      VECTOR   TopPos, VECTOR   BottomPos, float  r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの円錐を描画する
+extern	int			DrawCone3DD(     VECTOR_D TopPos, VECTOR_D BottomPos, double r,             int DivNum, unsigned int DifColor, unsigned int SpcColor, int FillFlag ) ;		// ３Ｄの円錐を描画する
 
 // 画像描画関数
 extern	int			LoadGraphScreen(           int x, int y, const TCHAR *GraphName,                         int TransFlag ) ;										// 画像ファイルを読みこんで画面に描画する
@@ -2927,7 +2919,7 @@ extern	int			DrawTurnGraph(            int x, int y,                            
 extern	int			DrawReverseGraph(         int x, int y,                                                                 int GrHandle, int TransFlag, int ReverseXFlag DEFAULTPARAM( = FALSE ) , int ReverseYFlag DEFAULTPARAM( = FALSE ) ) ;	// 画像の反転描画
 
 extern	int			DrawGraphF(               float xf, float yf,                                                                       int GrHandle, int TransFlag ) ;															// 画像の描画( 座標指定が float 版 )
-extern	int			DrawExtendGraphF(         float x1f, float y1f, float x2f, float y2,                                                int GrHandle, int TransFlag ) ;															// 画像の拡大描画( 座標指定が float 版 )
+extern	int			DrawExtendGraphF(         float x1f, float y1f, float x2f, float y2f,                                               int GrHandle, int TransFlag ) ;															// 画像の拡大描画( 座標指定が float 版 )
 extern	int			DrawRotaGraphF(           float xf, float yf,                       double ExRate,                    double Angle, int GrHandle, int TransFlag, int ReverseXFlag DEFAULTPARAM( = FALSE ) , int ReverseYFlag DEFAULTPARAM( = FALSE ) ) ;	// 画像の回転描画( 座標指定が float 版 )
 extern	int			DrawRotaGraph2F(          float xf, float yf, float cxf, float cyf, double ExtRate,                   double Angle, int GrHandle, int TransFlag, int ReverseXFlag DEFAULTPARAM( = FALSE ) , int ReverseYFlag DEFAULTPARAM( = FALSE ) ) ;	// 画像の回転描画２( 回転中心指定付き )( 座標指定が float 版 )
 extern	int			DrawRotaGraph3F(          float xf, float yf, float cxf, float cyf, double ExtRateX, double ExtRateY, double Angle, int GrHandle, int TransFlag, int ReverseXFlag DEFAULTPARAM( = FALSE ) , int ReverseYFlag DEFAULTPARAM( = FALSE ) ) ; 	// 画像の回転描画３( 回転中心指定付き＋縦横拡大率別指定版 )( 座標指定が float 版 )
@@ -3067,6 +3059,7 @@ extern	int			SetWriteZBuffer3D(					int Flag ) ;													// Ｚバッファ�
 extern	int			SetZBufferCmpType3D(				int CmpType /* DX_CMP_NEVER 等 */ ) ;							// ＺバッファのＺ値と書き込むＺ値との比較モードを設定する( ３Ｄ描画のみに影響 )( CmpType:DX_CMP_NEVER等( デフォルト:DX_CMP_LESSEQUAL ) )
 extern	int			SetZBias3D(							int Bias ) ;													// 書き込むＺ値のバイアスを設定する( ３Ｄ描画のみに影響 )( Bias:バイアス値( デフォルト:0 ) )
 extern	int			SetDrawZ(							float Z ) ;														// ２Ｄ描画でＺバッファに書き込むＺ値を設定する( Z:書き込むＺ値( デフォルト:0.2f ) )
+extern	int			SetUseReversedZ(					int Flag ) ;													// Ｚバッファに書き込むＺ値を標準方式と反転した値( リバースＺ )にするかどうかを設定する、DxLib_Init実行前のみ使用可能( TRUE:反転した値にする　FALSE:通常の値にする( デフォルト ) )
 
 extern	int			SetDrawArea(						int x1, int y1, int x2, int y2 ) ;								// 描画可能領域の設定する
 extern	int			GetDrawArea(						RECT *Rect ) ;													// 描画可能領域を取得する
@@ -3138,6 +3131,17 @@ extern	int			SetFogStartEnd(						float  start, float  end ) ;									// フォ
 extern	int			GetFogStartEnd(						float *start, float *end ) ;									// フォグが始まる距離と終了する距離を取得する( 0.0f ～ 1.0f )
 extern	int			SetFogDensity(						float density ) ;												// フォグの密度を設定する( 0.0f ～ 1.0f )
 extern	float		GetFogDensity(						void ) ;														// フォグの密度を取得する( 0.0f ～ 1.0f )
+
+extern	int			SetVerticalFogEnable(				int Flag ) ;													// 高さフォグを有効にするかどうかを設定する( TRUE:有効  FALSE:無効 )
+extern	int			GetVerticalFogEnable(				void ) ;														// 高さフォグが有効かどうかを取得する( TRUE:有効  FALSE:無効 )
+extern	int			SetVerticalFogMode(					int Mode /* DX_FOGMODE_NONE 等 */ ) ;							// 高さフォグモードを設定する
+extern	int			GetVerticalFogMode(					void ) ;														// 高さフォグモードを取得する
+extern	int			SetVerticalFogColor(				int  r, int  g, int  b ) ;										// 高さフォグカラーを設定する
+extern	int			GetVerticalFogColor(				int *r, int *g, int *b ) ;										// 高さフォグカラーを取得する
+extern	int			SetVerticalFogStartEnd(				float  start, float  end ) ;									// 高さフォグが始まる距離と終了する距離を設定する( 0.0f ～ 1.0f )
+extern	int			GetVerticalFogStartEnd(				float *start, float *end ) ;									// 高さフォグが始まる距離と終了する距離を取得する( 0.0f ～ 1.0f )
+extern	int			SetVerticalFogDensity(				float start, float density ) ;									// 高さフォグが始まる処理と密度を設定する( 0.0f ～ 1.0f )
+extern	int			GetVerticalFogDensity(				float *start, float *density ) ;								// 高さフォグの始まる処理と密度を取得する( 0.0f ～ 1.0f )
 
 
 // 画面関係関数
@@ -3551,6 +3555,7 @@ extern	int			SetMaterialParam(			MATERIALPARAM Material ) ;														// ３�
 extern	int			SetUseSpecular(				int UseFlag ) ;																	// ３Ｄ描画にスペキュラを使用するかどうかを設定する
 extern	int			SetGlobalAmbientLight(		COLOR_F Color ) ;																// グローバルアンビエントライトカラーを設定する
 extern	int			SetUseLightAngleAttenuation( int UseFlag ) ;																// ３Ｄ描画のライティング計算で角度減衰を行うかどうかを設定する( TRUE:角度減衰を行う( デフォルト )  FALSE:角度減衰を行わない )
+extern	int			SetUseHalfLambertLighting(	 int UseFlag ) ;																	// ３Ｄ描画のライティング計算でハーフランバートを使用するかどうかを設定する( TRUE:ハーフランバートを使用する  FALSE:ハーフランバートを使用しない( デフォルト ) )
 
 extern	int			ChangeLightTypeDir(			VECTOR Direction ) ;															// デフォルトライトのタイプをディレクショナルライトにする
 extern	int			ChangeLightTypeSpot(		VECTOR Position, VECTOR Direction, float OutAngle, float InAngle, float Range, float Atten0, float Atten1, float Atten2 ) ;	// デフォルトライトのタイプをスポットライトにする
@@ -5162,6 +5167,7 @@ extern	int			MV1LoadModelWithStrLen(				const TCHAR *FileName, size_t FileNameLe
 extern	int			MV1LoadModelFromMem(				const void *FileImage, int FileSize, int (* FileReadFunc )( const TCHAR *FilePath, void **FileImageAddr, int *FileSize, void *FileReadFuncData ), int (* FileReleaseFunc )( void *MemoryAddr, void *FileReadFuncData ), void *FileReadFuncData DEFAULTPARAM( = NULL ) ) ;	// メモリ上のモデルファイルイメージと独自の読み込みルーチンを使用してモデルを読み込む
 extern	int			MV1DuplicateModel(					int SrcMHandle ) ;													// 指定のモデルと同じモデル基本データを使用してモデルを作成する( -1:エラー  0以上:モデルハンドル )
 extern	int			MV1CreateCloneModel(				int SrcMHandle ) ;													// 指定のモデルをモデル基本データも含め複製する( MV1DuplicateModel はモデル基本データは共有しますが、こちらは複製元のモデルとは一切共有データの無いモデルハンドルを作成します )( -1:エラー  0以上:モデルハンドル )
+extern	int			MV1CreateSimpleModel(				VERTEX3D *Vertex, int VertexNum, unsigned int *Index, int IndexNum, MATERIALPARAM *Material, int GrHandle ) ;		// 指定の頂点データとマテリアル情報、テクスチャを使用したシンプルな３Ｄモデルのハンドルを作成する
 
 extern	int			MV1DeleteModel(						int MHandle ) ;														// モデルを削除する
 extern	int			MV1InitModel(						void ) ;															// すべてのモデルを削除する
@@ -5341,6 +5347,7 @@ extern	int			MV1SetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex, in
 extern	int			MV1GetMaterialSubDifMapTexture(		int MHandle, int MaterialIndex ) ;										// 指定のマテリアルでサブディフューズマップとして使用されているテクスチャのインデックスを取得する
 extern	int			MV1SetMaterialSpcMapTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// 指定のマテリアルでスペキュラマップとして使用するテクスチャを指定する
 extern	int			MV1GetMaterialSpcMapTexture(		int MHandle, int MaterialIndex ) ;										// 指定のマテリアルでスペキュラマップとして使用されているテクスチャのインデックスを取得する
+extern	int			MV1SetMaterialNormalMapTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// 指定のマテリアルで法線マップとして使用するテクスチャを指定する
 extern	int			MV1GetMaterialNormalMapTexture(		int MHandle, int MaterialIndex ) ;										// 指定のマテリアルで法線マップとして使用されているテクスチャのインデックスを取得する
 extern	int			MV1SetMaterialDifGradTexture(		int MHandle, int MaterialIndex, int TexIndex ) ;						// 指定のマテリアルでトゥーンレンダリングのディフューズグラデーションマップとして使用するテクスチャを設定する
 extern	int			MV1GetMaterialDifGradTexture(		int MHandle, int MaterialIndex ) ;										// 指定のマテリアルでトゥーンレンダリングのディフューズグラデーションマップとして使用するテクスチャを取得する
@@ -5404,6 +5411,10 @@ extern	int			MV1SetTextureBumpImageNextPixelLength(	int MHandle, int TexIndex, f
 extern	float		MV1GetTextureBumpImageNextPixelLength(	int MHandle, int TexIndex ) ;										// バンプマップ画像の場合の隣のピクセルとの距離を取得する
 extern	int			MV1SetTextureSampleFilterMode(			int MHandle, int TexIndex, int FilterMode ) ;						// テクスチャのフィルタリングモードを設定する
 extern	int			MV1GetTextureSampleFilterMode(			int MHandle, int TexIndex ) ;										// テクスチャのフィルタリングモードを取得する( 戻り値  DX_DRAWMODE_BILINEAR等 )
+extern	int			MV1AddTexture(							int MHandle, const TCHAR *Name,                    const TCHAR *ColorFilePath,                             const TCHAR *AlphaFilePath DEFAULTPARAM( = NULL ) ,                                                  void *ColorFileImage DEFAULTPARAM( = NULL ) , void *AlphaFileImage DEFAULTPARAM( = NULL ) , int AddressModeU DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int AddressModeV DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int FilterMode DEFAULTPARAM( = DX_DRAWMODE_ANISOTROPIC ) , int BumpImageFlag DEFAULTPARAM( = FALSE ) , float BumpImageNextPixelLength DEFAULTPARAM( = 0.1f ) , int ReverseFlag DEFAULTPARAM( = FALSE ) , int Bmp32AllZeroAlphaToXRGB8Flag DEFAULTPARAM( = FALSE ) ) ;	// モデルで使用するテクスチャを追加する
+extern	int			MV1AddTextureWithStrLen(				int MHandle, const TCHAR *Name, size_t NameLength, const TCHAR *ColorFilePath, size_t ColorFilePathLength, const TCHAR *AlphaFilePath DEFAULTPARAM( = NULL ) , size_t AlphaFilePathLength DEFAULTPARAM( = 0 ) , void *ColorFileImage DEFAULTPARAM( = NULL ) , void *AlphaFileImage DEFAULTPARAM( = NULL ) , int AddressModeU DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int AddressModeV DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int FilterMode DEFAULTPARAM( = DX_DRAWMODE_ANISOTROPIC ) , int BumpImageFlag DEFAULTPARAM( = FALSE ) , float BumpImageNextPixelLength DEFAULTPARAM( = 0.1f ) , int ReverseFlag DEFAULTPARAM( = FALSE ) , int Bmp32AllZeroAlphaToXRGB8Flag DEFAULTPARAM( = FALSE ) ) ;	// モデルで使用するテクスチャを追加する
+extern	int			MV1AddTextureGraphHandle(				int MHandle, const TCHAR *Name,                    int GrHandle, int SemiTransFlag,                                                                                                                                                                                                                         int AddressModeU DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int AddressModeV DEFAULTPARAM( = DX_TEXADDRESS_WRAP ) , int FilterMode DEFAULTPARAM( = DX_DRAWMODE_ANISOTROPIC ) ) ;																																																			// モデルで使用するテクスチャを追加する( グラフィックハンドルをテクスチャとして追加 )
+
 extern	int			MV1LoadTexture(							const TCHAR *FilePath                        ) ;					// ３Ｄモデルに貼り付けるのに向いた画像の読み込み方式で画像を読み込む( 戻り値  -1:エラー  0以上:グラフィックハンドル )
 extern	int			MV1LoadTextureWithStrLen(				const TCHAR *FilePath, size_t FilePathLength ) ;					// ３Ｄモデルに貼り付けるのに向いた画像の読み込み方式で画像を読み込む( 戻り値  -1:エラー  0以上:グラフィックハンドル )
 
