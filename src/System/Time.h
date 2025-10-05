@@ -56,7 +56,7 @@ namespace Time
 	//前フレームとの実際の物理的時間差の取得(float)
 	const float RealDeltaTime();
 	//前フレームとの実際の物理的時間差の取得(double)
-	const float RealDeltaTimeD();
+	const double RealDeltaTimeD();
 
 
 	//アプリケーション開始後の物理的時間の取得(float)
@@ -68,7 +68,7 @@ namespace Time
 	//アプリケーション開始後のゲーム内時間の取得(double)
 	const double GetTimeFromStartD();
 	//アプリケーション開始後の現実時間の取得(float)
-	const double GetRealTimeFromStart();
+	const float GetRealTimeFromStart();
 	//アプリケーション開始後の現実時間の取得(double)
 	const double GetRealTimeFromStartD();
 

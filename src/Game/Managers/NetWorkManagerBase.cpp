@@ -192,7 +192,7 @@ void NetWorkManagerBase::CheckForNewConnect(const bool& finish_flag)
 			DxLib::GetNetWorkIP(new_handle, &other_ip);
 
 			//unique_ptrで作成->マネージャが管理
-			auto net = std::make_unique<NetWork>(new_handle, other_ip, SEC2MICRO(Time::GetTimeFromStart()));
+			auto net = std::make_unique<NetWork>(new_handle, other_ip, static_cast<unsigned int>(SEC2MICRO(Time::GetTimeFromStart())));
 
 			//接続解除時のデフォルトコールバックを設定(こちらは基本書き換えが不可能)
 			net->on_disconnect = on_disconnection;

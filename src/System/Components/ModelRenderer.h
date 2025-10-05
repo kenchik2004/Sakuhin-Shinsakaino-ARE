@@ -20,6 +20,7 @@ public:
 	void LateUpdate() override;
 	void PostPhysics() override;
 	void Exit() override;
+	void PreDraw() override;
 	void Draw() override;
 	void DebugDraw() override;
 
@@ -34,6 +35,10 @@ public:
 	std::string model_name = "";
 	std::string new_name = "";
 
+
+	bool cast_shadow = true;
+	void SetCastShadow(bool enable) { cast_shadow = enable; }
+	bool CastShadow() { return cast_shadow; }
 
 	//!<IDEA モデルは、data/modelフォルダに格納しているものすべてを、マネージャ初期化時にロードし、キャッシュしておく
 	//! ↑この場合、モデルの名前付けはどうするか...

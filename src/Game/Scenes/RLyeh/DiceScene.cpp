@@ -15,6 +15,7 @@
 #include"System/Components/Camera.h"
 #include <System/IniFileManager.h>
 #include "Game/Objects/RLyeh/Cards/CardBase.h"
+#include <System/Objects/ShadowMapObject.h>
 
 namespace {
 	std::array<std::string, 5> card_name = {
@@ -54,6 +55,7 @@ namespace RLyeh {
 			*PhysicsManager::GetPhysicsInstance(), physx::PxPlane(0, 0, -1, 4),
 			*Material::Default)
 		);
+		SceneManager::Object::Create<ShadowMapObject>(shared_from_this())->SetShadowMapSize(2048);
 		auto tray = SceneManager::Object::Create<GameObject>(shared_from_this());
 		tray->AddComponent<RigidBody>();
 		tray->transform->scale = { 5,5,5 };

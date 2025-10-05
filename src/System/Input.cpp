@@ -99,7 +99,7 @@ namespace Input {
 	}
 
 	void SetMousePosition(Vector2 new_pos, bool reset_delta) {
-		SetMousePoint(new_pos.x, new_pos.y);
+		SetMousePoint(static_cast<int>(new_pos.x), static_cast<int>(new_pos.y));
 		mouse_pos = GetMousePosition();
 		if (reset_delta)
 			mouse_pos_prev = mouse_pos;

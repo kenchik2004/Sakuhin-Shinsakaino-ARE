@@ -428,8 +428,9 @@ Model::Model()
 void Model::Draw()
 {
 	bool write_z = MV1GetOpacityRate(handle) < 1.0f;
-	DxLib::SetWriteZBuffer3D(write_z);
-	//フレーム(リグ)単位でメッシュを描画
+
+	//	DxLib::SetWriteZBuffer3D(write_z);
+		//フレーム(リグ)単位でメッシュを描画
 	for (s32 frame_index = 0; frame_index < MV1GetFrameNum(handle); frame_index++)
 	{
 		//フレームのメッシュ数を取得
@@ -482,10 +483,11 @@ void Model::Draw()
 	DxLib::SetWriteZBuffer3D(true);
 }
 
-void Animation::Update(float anim_timer)
+void Animation::Update(float speed)
 {
+	current_time += Time::RealDeltaTime() * 60 * speed;
 	for (auto& call_back : call_backs) {
-		if (!call_back.is_executed && anim_timer > call_back.ex_frame)
+		if (!call_back.is_executed && current_time > call_back.ex_frame)
 		{
 			call_back.is_executed = true;
 			if (call_back.function)
@@ -501,7 +503,7 @@ void Animation::InitCallBacks()
 	}
 }
 
-void Animation::SetCallBack(const std::function<void()>& call_back, float execute_frame, std::string_view method_name)
+void Animation::SetCallBack(std::function<void()>& call_back, float execute_frame, std::string_view method_name)
 {
 	std::string name(method_name);
 	auto it = method_names.find(name);

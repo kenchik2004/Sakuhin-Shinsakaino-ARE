@@ -14,8 +14,8 @@ namespace RLyeh {
 		//transform->scale = { 0.5f,0.5f,0.5f };
 		mod->SetModel(model_name);
 		MV1SetTextureGraphHandle(mod->GetModelHandle(), 0, handle, true);
-		MV1SetOpacityRate(mod->GetModelHandle(), 0.7f);
-		MV1SetZBufferCmpType(mod->GetModelHandle(), DX_CMP_ALWAYS);
+		//MV1SetOpacityRate(mod->GetModelHandle(), 0.7f);
+		//MV1SetZBufferCmpType(mod->GetModelHandle(), DX_CMP_ALWAYS);
 		//mod->scale = { 0.01f,0.01f,0.01f };
 		transform->position = Vector3((GetRand(100) - 50) * 0.1f, 1.6f, (GetRand(100) - 50) * 0.1f);
 		transform->rotation = Quaternion(DEG2RAD(GetRand(360)), Vector3((GetRand(10) - 5) * 0.1f, (GetRand(10) - 5) * 0.1f, (GetRand(10) - 5) * 0.1f).getNormalized());

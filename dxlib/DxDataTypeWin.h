@@ -1,4 +1,4 @@
-// -------------------------------------------------------------------------------
+﻿// -------------------------------------------------------------------------------
 // 
 // 		ＤＸライブラリ		Windows用データタイプ定義ヘッダファイル
 // 
@@ -1342,9 +1342,9 @@ namespace DxLib
 
 #ifndef LONG_PTR
 #ifdef _WIN64
-#define LONG_PTR	__int64
+//#define LONG_PTR	__int64
 #else
-#define LONG_PTR	int
+//#define LONG_PTR	int
 #endif
 #endif
 

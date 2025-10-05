@@ -59,10 +59,12 @@
     <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD4.cpp" />
     <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD6.cpp" />
     <ClCompile Include="src\Game\Objects\RLyeh\Dices\DiceD8.cpp" />
+    <ClCompile Include="src\Game\Objects\SampleAnimation\SampleAnimationObject.cpp" />
     <ClCompile Include="src\Game\Scenes\AmeGame\SceneAme.cpp" />
     <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene.cpp" />
     <ClCompile Include="src\Game\Scenes\RLyeh\DiceScene.cpp" />
     <ClCompile Include="src\Game\Scenes\RLyeh\SceneTitle.cpp" />
+    <ClCompile Include="src\Game\Scenes\SampleAnimation\SampleAnimationScene.cpp" />
     <ClCompile Include="src\Game\Scenes\Shader\SceneShader.cpp" />
     <ClCompile Include="src\Game\Utilitys\DicePair.cpp" />
     <ClCompile Include="src\Game\Utilitys\RLyeh\CharacterStatus.cpp" />
@@ -94,6 +96,7 @@
     <ClCompile Include="src\System\Object.cpp" />
     <ClCompile Include="src\System\Objects\ButtonObject.cpp" />
     <ClCompile Include="src\System\Objects\CameraObject.cpp" />
+    <ClCompile Include="src\System\Objects\ShadowMapObject.cpp" />
     <ClCompile Include="src\System\Objects\TextObject.cpp" />
     <ClCompile Include="src\System\PhysicsManager.cpp" />
     <ClCompile Include="src\System\Random.cpp" />
@@ -103,6 +106,7 @@
     <ClCompile Include="src\System\TextureManager.cpp" />
     <ClCompile Include="src\System\Time.cpp" />
     <ClCompile Include="src\System\typedef.cpp" />
+    <ClCompile Include="src\System\Utils\Render.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Audio\WinMMRecorder.h" />
@@ -129,10 +133,12 @@
     <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD4.h" />
     <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD6.h" />
     <ClInclude Include="src\Game\Objects\RLyeh\Dices\DiceD8.h" />
+    <ClInclude Include="src\Game\Objects\SampleAnimation\SampleAnimationObject.h" />
     <ClInclude Include="src\Game\Scenes\AmeGame\SceneAme.h" />
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene.h" />
     <ClInclude Include="src\Game\Scenes\RLyeh\DiceScene.h" />
     <ClInclude Include="src\Game\Scenes\RLyeh\SceneTitle.h" />
+    <ClInclude Include="src\Game\Scenes\SampleAnimation\SampleAnimationScene.h" />
     <ClInclude Include="src\Game\Scenes\Shader\SceneShader.h" />
     <ClInclude Include="src\Game\Utilitys\DicePair.h" />
     <ClInclude Include="src\Game\Utilitys\RLyeh\CharacterStatus.h" />
@@ -165,6 +171,7 @@
     <ClInclude Include="src\System\Object.h" />
     <ClInclude Include="src\System\Objects\ButtonObject.h" />
     <ClInclude Include="src\System\Objects\CameraObject.h" />
+    <ClInclude Include="src\System\Objects\ShadowMapObject.h" />
     <ClInclude Include="src\System\Objects\TextObject.h" />
     <ClInclude Include="src\System\PhysicsManager.h" />
     <ClInclude Include="src\System\Random.h" />
@@ -174,6 +181,7 @@
     <ClInclude Include="src\System\TextureManager.h" />
     <ClInclude Include="src\System\Time.h" />
     <ClInclude Include="src\System\typedef.h" />
+    <ClInclude Include="src\System\Utils\Render.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

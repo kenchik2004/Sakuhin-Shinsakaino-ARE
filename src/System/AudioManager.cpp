@@ -119,5 +119,6 @@ void AudioManager::Exit()
 }
 
 void AudioClip::PlayOneShot() {
+	ChangeVolumeSoundMem(255, handle);
 	PlaySoundMem(handle, DX_PLAYTYPE_BACK);
 }

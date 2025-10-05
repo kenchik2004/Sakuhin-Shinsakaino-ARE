@@ -128,7 +128,7 @@ int SceneShader::Init()
 	light_shader_ps = std::make_shared<ShaderPs>("data/shader/ps_shadow.fx");
 	SetDrawValidGraphCreateZBufferFlag(true);
 	SetCreateDrawValidGraphZBufferBitDepth(32);
-	shadow_map = TextureManager::Create("shadow_map", static_cast<int>(shadowmap_size.x), static_cast<int>(shadowmap_size.y));
+	shadow_map = TextureManager::Create("shadow_map", static_cast<int>(shadowmap_size.x), static_cast<int>(shadowmap_size.y),DXGI_FORMAT_D32_FLOAT);
 	model_obj = SceneManager::Object::Create<GameObject>();
 	model_obj->transform->position.y = 3;
 	MV1SetPosition(model[0], VGet(0, 1.15f, 0));
@@ -154,9 +154,9 @@ void SceneShader::Update()
 		SafeSharedPtr<Texture> tex;
 		//tex= TextureManager::CloneByName("shadow_map");
 		tex = shadow_map;
-		MV1SetTextureGraphHandle(model[0], 6, tex->GetHandle(), true);
-		MV1SetTextureGraphHandle(model[0], 0, tex->GetHandle(), true);
-		MV1SetTextureGraphHandle(model[0], 3, tex->GetHandle(), true);
+		MV1SetTextureGraphHandle(model[0], 6, *tex, true);
+		MV1SetTextureGraphHandle(model[0], 0, *tex, true);
+		MV1SetTextureGraphHandle(model[0], 3, *tex, true);
 
 	}
 	//light_pos = Quaternion(DEG2RAD(Time::DeltaTime() * 10), Vector3(0, 1, 0).getNormalized()).rotate(light_pos);
@@ -219,7 +219,7 @@ void SceneShader::Draw()
 	//DxLib::SetDrawScreen(shadow_map->GetHandle());
 	auto d3ddevice = reinterpret_cast<ID3D11Device*>(const_cast<void*>(DxLib::GetUseDirect3D11Device()));
 	auto d3ddevicecontext = reinterpret_cast<ID3D11DeviceContext*>(const_cast<void*>(DxLib::GetUseDirect3D11DeviceContext()));
-	auto shadow_dsv = reinterpret_cast<ID3D11DepthStencilView*>(const_cast<void*>(DxLib::GetGraphID3D11DepthStencilView(shadow_map->GetHandle())));
+	auto shadow_dsv = reinterpret_cast<ID3D11DepthStencilView*>(const_cast<void*>(DxLib::GetGraphID3D11DepthStencilView(*shadow_map)));
 	D3D11_VIEWPORT vp;
 	vp.Width = (FLOAT)shadowmap_size.x;
 	vp.Height = (FLOAT)shadowmap_size.y;

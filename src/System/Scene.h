@@ -4,6 +4,7 @@ USING_PTR(Object);
 USING_PTR(AudioListener);
 USING_PTR(Scene);
 USING_PTR(Camera);
+USING_PTR(DebugCamera);
 struct SceneStat {
 	friend class Scene;
 	std::string ClassName() { return class_name; }
@@ -111,6 +112,9 @@ public:
 	void SetCurrentCamera(CameraP camera) { current_camera = camera; }
 	CameraWP GetCurrentCamera() { return current_camera; }
 	CameraWP& GetCurrentCameraRef() { return current_camera; }
+	void SetDebugCamera(DebugCameraP camera) { debug_camera = camera; }
+	DebugCameraWP GetDebugCamera() { return debug_camera; }
+	DebugCameraWP& GetDebugCameraRef() { return debug_camera; }
 
 
 private:
@@ -125,6 +129,7 @@ private:
 	void SyncGameObjectsPriority();
 	AudioListenerWP current_audio_listener;
 	CameraWP current_camera;
+	DebugCameraWP debug_camera;
 
 protected:
 

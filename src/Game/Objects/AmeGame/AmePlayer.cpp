@@ -11,6 +11,12 @@
 #include "System/Components/AudioPlayer.h"
 namespace AmeGame {
 
+#ifdef _DEBUG
+	bool fly_mode = false;
+	float fly_input_tymelimit = 0.4f;
+	float fly_input_delta = 0.0f;
+
+#endif
 	int AmePlayer::Init()
 	{
 		//プレイヤーの初期化(仮)
@@ -46,6 +52,7 @@ namespace AmeGame {
 		auto sky = SceneManager::Object::Create<Object>();
 		auto model = sky->AddComponent<ModelRenderer>();
 		model->SetModel("sky");
+		model->cast_shadow = false;
 		transform->SetChild(sky->transform);
 		sky->transform->local_position = { 0,0,0 };
 		sky->transform->scale = { 3,3,3 };
@@ -64,11 +71,41 @@ namespace AmeGame {
 			mouse_pos.y = 1;
 		if (mouse_pos.y < 1)
 			mouse_pos.y = SCREEN_H - 2;
+#ifdef _DEBUG
+		fly_input_delta -= Time::DeltaTime();
+		if (Input::GetKeyDown(KeyCode::Space)) {
+			if (fly_input_delta > 0) {
+				fly_mode = !fly_mode;
+				fly_input_delta = 0.0f;
+				if (fly_mode) {
+					auto rb = GetComponent<RigidBody>();
+					rb->use_gravity = false;
+					rb->velocity = { 0,0,0 };
+
+				}
+				else {
+					GetComponent<RigidBody>()->use_gravity = true;
+					is_jumping = true;
+				}
+			}
+
+			else {
+				fly_input_delta = fly_input_tymelimit;
+			}
+		}
+		if(Input::GetKey(KeyCode::Space)&&fly_mode)
+			transform->position += Vector3(0, Time::DeltaTime()*10, 0);
+			
+		if(Input::GetKey(KeyCode::LControl) && fly_mode)
+			transform->position -= Vector3(0, Time::DeltaTime()*10, 0);
+		
+#endif
+
 		Input::SetMousePosition(mouse_pos);
 		transform->AddRotation(Quaternion(DEG2RAD(Time::DeltaTime() * 10 * mouse_.x), { 0, 1, 0 }));
 
 		auto child = transform->GetChild(0).lock();
-		if ((child->local_rotation * (Quaternion(DEG2RAD(Time::DeltaTime() * 10 * mouse_.y), { 1, 0, 0 }))).rotate({ 0,0,1 }).dot({ 0,0,1 }) > 0.9f)
+		if ((child->local_rotation * (Quaternion(DEG2RAD(Time::DeltaTime() * 10 * mouse_.y), { 1, 0, 0 }))).rotate({ 0,0,1 }).dot({ 0,0,1 }) > 0.2f)
 			child->local_rotation *= (Quaternion(DEG2RAD(Time::DeltaTime() * 10 * mouse_.y), { 1, 0, 0 }));
 
 		auto rb = GetComponent<RigidBody>();

@@ -61,7 +61,7 @@ namespace RLyeh {
 	{
 		//タイトル画面の描画
 		if (title_img)
-			DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, title_img->GetHandle(), false);
+			DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *title_img, false);
 
 		//なんかそれっぽく暗めにする
 		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 192);
@@ -77,13 +77,13 @@ namespace RLyeh {
 		}
 		else {
 			//裏シーンの描画領域をこっちに持ってくる
-			DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, SafeStaticCast<Camera>(dice_scene->GetCurrentCamera().lock())->my_screen->GetHandle(), true);
+			DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *SafeStaticCast<Camera>(dice_scene->GetCurrentCamera().lock())->my_screen, true);
 			//デカデカとタイトル表示
 			SetFontSize(150);
 			int x, y;
 			GetDrawStringSize(&x, &y, nullptr, "  THE\nR'LYEH", 13);
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, fabsf(sinf(static_cast<float>(Time::GetTimeFromStart())) * 255));
-			DrawString(SCREEN_W * 0.5f - x * 0.5f, SCREEN_H * 0.5f - y * 0.5f, "  THE\nR'LYEH", Color(1, 0, 0, 1));
+			//DrawString(SCREEN_W * 0.5f - x * 0.5f, SCREEN_H * 0.5f - y * 0.5f, "  THE\nR'LYEH", Color(1, 0, 0, 1));
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 			SetFontSize(DEFAULT_FONT_SIZE);
 			//とりあえず1でスキップ&結果集計

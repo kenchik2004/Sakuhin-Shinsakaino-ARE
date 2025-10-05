@@ -127,6 +127,10 @@
     <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene.cpp" />
     <ClCompile Include="src\Audio\WinMMRecorder.cpp" />
     <ClCompile Include="src\Audio\WinMMWavePlayer.cpp" />
+    <ClCompile Include="src\System\Utils\Render.cpp" />
+    <ClCompile Include="src\System\Objects\ShadowMapObject.cpp" />
+    <ClCompile Include="src\Game\Scenes\SampleAnimation\SampleAnimationScene.cpp" />
+    <ClCompile Include="src\Game\Objects\SampleAnimation\SampleAnimationObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -258,6 +262,10 @@
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene.h" />
     <ClInclude Include="src\Audio\WinMMRecorder.h" />
     <ClInclude Include="src\Audio\WinMMWavePlayer.h" />
+    <ClInclude Include="src\System\Utils\Render.h" />
+    <ClInclude Include="src\System\Objects\ShadowMapObject.h" />
+    <ClInclude Include="src\Game\Scenes\SampleAnimation\SampleAnimationScene.h" />
+    <ClInclude Include="src\Game\Objects\SampleAnimation\SampleAnimationObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

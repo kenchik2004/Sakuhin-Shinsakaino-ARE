@@ -4,11 +4,14 @@
 #include "System/IniFileManager.h"
 #include "System/ImGui_.h"
 #include <System/Components/Camera.h>
+#include <System/Utils/Render.h>
 //#define DEBUG_WINDOW
 //#define USE_DEBUG_DRAW
 //#define FULL_SCREEN
 
 //#define SECONDARY
+int SCREEN_W=1920;
+int SCREEN_H=1080;
 
 std::string window_classname[1] =
 {
@@ -69,11 +72,14 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	bool not_full_screen = FileSystem::IniFileManager::GetBool("StartConfig", "full_screen", false, "data/test.ini");
 	ChangeWindowMode(!not_full_screen);
+	SCREEN_W = FileSystem::IniFileManager::GetInt("StartConfig", "screen_width", 1920, "data/test.ini");
+	SCREEN_H = FileSystem::IniFileManager::GetInt("StartConfig", "screen_height", 1080, "data/test.ini");
 
 #ifdef FULL_SCREEN
 	//ChangeWindowMode(false);
 #endif
-	SetGraphMode(SCREEN_W*0.5f, SCREEN_H*0.5f, 32, 240);
+	SetGraphMode(SCREEN_W, SCREEN_H, 32, 240);
+	SetZBufferBitDepth(32);
 	std::string window_text = FileSystem::IniFileManager::GetString("StartConfig", "window_name", "メインウィンドウ", "data/test.ini");
 	SetMainWindowText(window_text.c_str());
 	SetBackgroundColor(100, 100, 100);
@@ -115,6 +121,9 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	Input::Init();
 	PhysicsManager::Init();
 	SceneManager::Init();
+	TextureManager::Init();
+	ModelManager::Init();
+	RenderInit();
 #if 0
 	ImGuiInit(false);
 #endif
@@ -309,6 +318,24 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	try {
 		PhysicsManager::Exit();
+	}
+	catch (Exception& ex) {
+		ex.Show();
+	}
+	try {
+		RenderExit();
+	}
+	catch (Exception& ex) {
+		ex.Show();
+	}
+	try {
+		ModelManager::Exit();
+	}
+	catch (Exception& ex) {
+		ex.Show();
+	}
+	try {
+		TextureManager::Exit();
 	}
 	catch (Exception& ex) {
 		ex.Show();

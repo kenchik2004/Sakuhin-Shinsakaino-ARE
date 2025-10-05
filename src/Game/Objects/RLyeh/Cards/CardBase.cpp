@@ -1,11 +1,10 @@
 ﻿#include "precompile.h"
 #include "CardBase.h"
 #include "System/Components/Camera.h"
-namespace {
+
+namespace RLyeh {
 	SafeSharedPtr<Texture> mytex = nullptr;
 	int count = 0;
-}
-namespace RLyeh {
 	int CardBase::Init()
 	{
 
@@ -23,7 +22,7 @@ namespace RLyeh {
 
 
 		SetTexture(my_texture);
-		MV1SetOpacityRate(model->GetModelHandle(), 0.1f);
+		//MV1SetOpacityRate(model->GetModelHandle(), 0.1f);
 		transform->position = Random::Position({ 3,0,3 }, { -3,0,-3 });
 		start_pos = transform->position;
 		return 0;

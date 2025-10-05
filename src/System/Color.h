@@ -6,6 +6,7 @@ public:
 	float g;
 	float b;
 	float a;
+	const float* color() const{ return &r; }
 	Color() :r(0), g(0), b(0), a(1) {}
 	Color(const unsigned int uint_color) {
 		r = float((uint_color & 0xff0000) >> 16) / 255; g = float((uint_color & 0x00ff00) >> 8) / 255; b = float(uint_color & 0x0000ff) / 255; a = 1.0f;

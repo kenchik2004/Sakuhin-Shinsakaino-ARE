@@ -76,7 +76,10 @@ class Animation {
 	std::string name;
 	int handle = -1;
 	int index = -1;
+	int attached_index = -1;
 	float total_time = 0;
+	float current_time = 0;
+	float blend_rate = 0.0f;
 	struct AnimationCallBack {
 		float ex_frame = 0;
 		std::function<void()> function = nullptr;
@@ -93,9 +96,9 @@ public:
 		total_time = other.total_time;
 		instance++;
 	}
-	void Update(float anim_timer);
+	void Update(float speed = 1.0f);
 	void InitCallBacks();
-	void SetCallBack(const std::function<void()>& call_back, float execute_frame, std::string_view method_name);
+	void SetCallBack(std::function<void()>& call_back, float execute_frame, std::string_view method_name);
 	void ResetCallBack(std::string_view method_name);
 	~Animation() { MV1DeleteModel(handle); instance--; }
 };

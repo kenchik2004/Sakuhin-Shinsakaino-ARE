@@ -62,11 +62,15 @@ bool Object::CheckForSingleComponent(ComponentP comp)
 
 void Object::SetPriority(unsigned int prio)
 {
+	unsigned int my_prio = GetPriority();
 	scene->SetObjPriority(prio, shared_from_this());
 	if (!transform->children.empty())
 	{
 		for (auto& child : transform->children) {
-			child->SetPriority(child->GetPriority() - prio);
+			//
+			unsigned int child_prio = child->GetPriority();
+			bool child_greater = child_prio > my_prio;
+			child->SetPriority(child_greater ? (prio + (my_prio - child_prio)) : (prio));
 		}
 	}
 }
@@ -125,28 +129,28 @@ void UIObject::PreUpdate()
 		div += {0, 0, 0};
 		break;
 	case CENTER_TOP:
-		div += {SCREEN_W * 0.5f, 0, 0};
+		div += {static_cast<float>(SCREEN_W) * 0.5f, 0, 0};
 		break;
 	case RIGHT_TOP:
-		div += {SCREEN_W, 0, 0};
+		div += {static_cast<float>(SCREEN_W), 0, 0};
 		break;
 	case LEFT_MIDDLE:
-		div += {0, SCREEN_H * 0.5f, 0};
+		div += {0, static_cast<float>(SCREEN_H) * 0.5f, 0};
 		break;
 	case CENTER:
-		div += {SCREEN_W * 0.5f, SCREEN_H * 0.5f, 0};
+		div += {static_cast<float>(SCREEN_W) * 0.5f, static_cast<float>(SCREEN_H) * 0.5f, 0};
 		break;
 	case RIGHT_MIDDLE:
-		div += {SCREEN_W, SCREEN_H * 0.5f, 0};
+		div += {static_cast<float>(SCREEN_W), static_cast<float>(SCREEN_H) * 0.5f, 0};
 		break;
 	case LEFT_BOTTOM:
-		div += {0, SCREEN_H, 0};
+		div += {0, static_cast<float>(SCREEN_H), 0};
 		break;
 	case CENTER_BOTTOM:
-		div += {SCREEN_W * 0.5f, SCREEN_H, 0};
+		div += {static_cast<float>(SCREEN_W) * 0.5f, static_cast<float>(SCREEN_H), 0};
 		break;
 	case RIGHT_BOTTOM:
-		div += {SCREEN_W, SCREEN_H, 0};
+		div += {static_cast<float>(SCREEN_W), static_cast<float>(SCREEN_H), 0};
 		break;
 	}
 

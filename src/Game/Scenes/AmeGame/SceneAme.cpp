@@ -15,7 +15,7 @@
 #include "System/Components/SphereCollider.h"
 #include "Game/Objects/AmeGame/IventManager.h"
 
-
+#include "System/Objects/ShadowMapObject.h"
 
 /*
  長い岩1
@@ -60,11 +60,6 @@ inline std::string u8str(const char8_t* str) {
 namespace AmeGame
 {
 	GameObjectP stage_object = nullptr;		//配置テスト用
-	int const_buffer = -1;
-	int light_const_buffer = -1;
-	Vector3 light_pos = { 0, 30, -100 };
-	Vector3 light_look = { 0, 0, 0 };
-	Vector3 light_up = { 0, 1, 0 };
 
 	struct CameraInfo
 	{
@@ -237,7 +232,7 @@ namespace AmeGame
 			Vector3 pos = transform->position;
 			float scale = transform->scale.magnitude();
 			SetDrawBlendMode(DX_BLENDMODE_ALPHA, 128);
-			DrawRotaGraph3D(pos.x, pos.y, pos.z, 0.003f * scale, Time::GetTimeFromStart(), onmyoudama->GetHandle(), true);
+			DrawRotaGraph3D(pos.x, pos.y, pos.z, 0.003f * scale, Time::GetTimeFromStart(), *onmyoudama, true);
 			SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
 		}
 		inline void LateDraw() {
@@ -276,6 +271,10 @@ namespace AmeGame
 
 	void SceneAme::Load()
 	{
+		//なんかDegRad変換がおかしい気がする->テスト
+		float rad = PI; //
+		float deg = RAD2DEG(rad); //
+		rad = DEG2RAD(deg); //
 		ModelManager::LoadAsModel("data/Stage/Sky_Dome.mv1", "sky");
 		ModelManager::LoadAsModel("data/Stage/Gensokyo/Gensokyo1.mv1", "field");
 		ModelManager::LoadAsModel("data/Stage/Gensokyo/hitozato.mv1", "field2");
@@ -311,8 +310,7 @@ namespace AmeGame
 
 		if (!CheckForLoading())
 			return 0;
-		const_buffer = CreateShaderConstantBuffer(sizeof(CameraInfo));
-		light_const_buffer = CreateShaderConstantBuffer(sizeof(LightInfo));
+		SceneManager::Object::Create<ShadowMapObject>()->SetShadowMapSize(1024);
 		title_audio = AudioManager::CloneByName("title");
 
 		//地形ルートパーツ
@@ -547,30 +545,9 @@ namespace AmeGame
 	{
 		if (!CheckForLoading())
 			return;
-		if constexpr (true)
-		{
-			void* ptr = GetBufferShaderConstantBuffer(light_const_buffer);
-			auto pptr = reinterpret_cast<LightInfo*>(ptr); {
-				pptr->light_color_ = { 1,1,1,0.5f };
-				Vector3 pos = Vector3(10, -10, 0);
-				pptr->light_direction_ = (-pos).getNormalized();
-			}
-			DxLib::SetShaderConstantBuffer(light_const_buffer, DX_SHADERTYPE_PIXEL, 13);
-			DxLib::UpdateShaderConstantBuffer(light_const_buffer);
-		}
 
-		if constexpr (true)
-		{
-			void* ptr = GetBufferShaderConstantBuffer(const_buffer);
-			auto pptr = reinterpret_cast<CameraInfo*>(ptr); {
-				pptr->eye_position_ = camera->transform->position;
-				pptr->mat_view_ = lookAtLH(camera->transform->position, camera->transform->position + camera->transform->AxisZ(), camera->transform->AxisY());
-				pptr->mat_proj_ = perspectiveFovLH(DEG2RAD(45.0f), (float)SCREEN_W / (float)SCREEN_H, 0.1f, 1000.0f);
 
-			}
-			DxLib::SetShaderConstantBuffer(const_buffer, DX_SHADERTYPE_PIXEL, 11);
-			DxLib::UpdateShaderConstantBuffer(const_buffer);
-		}
+
 		if (arrow_timer > 0.0f && interact_num < interact_points.size()) {
 			Vector3 arrow_start = camera->transform->position + camera->transform->AxisZ() * 0.1f - camera->transform->AxisY() * 0.7f;
 			Vector3 arrow_vec = ProjectOnPlane(interact_points[interact_num] - arrow_start, { 0,1,0 });
@@ -616,8 +593,6 @@ namespace AmeGame
 	{
 		title_audio.reset();
 		stage_object.reset();
-		DeleteShaderConstantBuffer(const_buffer);
-		DeleteShaderConstantBuffer(light_const_buffer);
 	}
 
 	bool SceneAme::CheckForLoading()

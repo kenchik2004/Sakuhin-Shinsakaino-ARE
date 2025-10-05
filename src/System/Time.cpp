@@ -172,7 +172,7 @@ namespace Time {
 	}
 
 	//前フレームとの実際の物理的時間差の取得(double)
-	const float RealDeltaTimeD()
+	const double RealDeltaTimeD()
 	{
 		return real_delta_time;
 	}
@@ -208,7 +208,7 @@ namespace Time {
 	}
 
 	//アプリケーション開始後の現実時間の取得(float)
-	const double GetRealTimeFromStart()
+	const float GetRealTimeFromStart()
 	{
 		return (float)real_time;
 	}

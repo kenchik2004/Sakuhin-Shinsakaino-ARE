@@ -98,12 +98,14 @@ void Transform::SetChild(TransformP new_child)
 		p = p->parent; // 親をたどる
 	}
 	// 子Transformの親を設定
+	if (new_child->parent)
+		new_child->parent->ResetChild(new_child); // 既に親がいる場合は、親の子リストから削除しておく
 	new_child->parent = SafeWeakPtr<Transform>(std::static_pointer_cast<Transform>(shared_from_this()));
 	children.push_back(new_child);
 	new_child->owner->SetPriority(new_child->owner->GetPriority());	// 親の優先度を引き継ぐためにSetPriorityを呼び出す(親がいる場合は勝手に加算されるので、今の優先度をそのまま与える)
 	Vector3 scale_ = new_child->scale;	// 親Transformからの相対スケールを計算
 	new_child->local_scale = scale_ / scale;	// 親Transformからの相対スケールを計算
-	new_child->local_position = (rotation.rotate(new_child->position - position));	// 親Transformからの相対位置を計算
+	new_child->local_position = (new_child->local_scale / scale_).multiply(rotation.rotate(new_child->position - position));	// 親Transformからの相対位置を計算
 	new_child->local_rotation = rotation.getConjugate() * new_child->rotation;	// 親Transformからの相対回転を計算
 	new_child->PreDraw();
 }
@@ -153,12 +155,14 @@ void Transform::AddRotation(Vector3 euler_angles)
 	Quaternion qx(DEG2RAD(euler_angles.x), Vector3(1, 0, 0));
 	Quaternion qy(DEG2RAD(euler_angles.y), Vector3(0, 1, 0));
 	Quaternion qz(DEG2RAD(euler_angles.z), Vector3(0, 0, 1));
-	rotation = rotation * (qx * qy * qz);
+	rotation = rotation * (qz * qy * qx);
 	rotation.normalize();
 
 }
 void Transform::AddRotation(Quaternion q)
 {
+	if (q.isIdentity())
+		return;
 	rotation = rotation * q;
 	rotation.normalize();
 }
@@ -168,81 +172,80 @@ void Transform::SetRotation(Vector3 euler_angles)
 	Quaternion qx(DEG2RAD(euler_angles.x), Vector3(1, 0, 0));
 	Quaternion qy(DEG2RAD(euler_angles.y), Vector3(0, 1, 0));
 	Quaternion qz(DEG2RAD(euler_angles.z), Vector3(0, 0, 1));
-	rotation = qx * qy * qz;
+	rotation = qz * qy * qx;
 }
 void Transform::SetRotation(Quaternion q)
 {
+	q.normalize();
 	rotation = q;
+}
+
+void Transform::AddLocalRotation(Quaternion q)
+{
+	if (q.isIdentity())
+		return;
+	local_rotation = local_rotation * q;
+	local_rotation.normalize();
+}
+
+void Transform::AddLocalRotation(Vector3 euler_angles)
+{
+	Quaternion qx(DEG2RAD(euler_angles.x), Vector3(1, 0, 0));
+	Quaternion qy(DEG2RAD(euler_angles.y), Vector3(0, 1, 0));
+	Quaternion qz(DEG2RAD(euler_angles.z), Vector3(0, 0, 1));
+	local_rotation = local_rotation * (qz * qy * qx);
+	local_rotation.normalize();
+}
+
+void Transform::SetLocalRotation(Quaternion q)
+{
+	q.normalize();
+	local_rotation = q;
+}
+
+void Transform::SetLocalRotation(Vector3 euler_angles)
+{
+	Quaternion qx(DEG2RAD(euler_angles.x), Vector3(1, 0, 0));
+	Quaternion qy(DEG2RAD(euler_angles.y), Vector3(0, 1, 0));
+	Quaternion qz(DEG2RAD(euler_angles.z), Vector3(0, 0, 1));
+	local_rotation = qz * qy * qx;
 }
 
 Vector3 Transform::AxisX()
 {
-	float3 vec = rotation.getBasisVector0();
+	Vector3 vec = rotation.getBasisVector0();
 	return vec;
 }
 
 Vector3 Transform::AxisY()
 {
-	float3 vec = rotation.getBasisVector1();
+	Vector3 vec = rotation.getBasisVector1();
 	return vec;
 }
 
 Vector3 Transform::AxisZ()
 {
-	float3 vec = rotation.getBasisVector2();
+	Vector3 vec = rotation.getBasisVector2();
 	return vec;
 
 }
 
-void Transform::SetAxisX(Vector3 target) {
-	float3 right = { 1.0f, 0.0f, 0.0f }; // デフォルトの前方 (+Z)
-	float3 targetNorm = target;
-	targetNorm.normalize(); // 正規化
-
-	float3 axis = GetFloat3Cross(right, targetNorm); // 回転軸
-	float dot = GetFloat3Dot(right, targetNorm); // 内積
-	float angle = acosf(dot); // 角度（ラジアン）
-
-	// 回転が不要な場合（すでに一致している）
-	if (fabs(dot - 1.0f) < FLT_EPSILON) {
-		rotation *= { 1, 0, 0, 0 }; // 単位クォータニオン
-	}
-
-	axis.normalize(); // 軸を正規化
-	rotation = Quaternion(angle, axis);
+void Transform::SetAxisX(Vector3 target, Vector3 up) {
+	Vector3 targetNorm = target.getNormalized();	//新しいX軸
+	Vector3 upNorm = up.getNormalized();		//基準となるY軸
+	Vector3 newZ = targetNorm.cross(upNorm).getNormalized(); //二つをもとに新しいZ軸を計算
+	rotation = Quaternion({ targetNorm, upNorm, newZ });	//3軸の方向からクォータニオンを作成
 }
 
-void Transform::SetAxisY(Vector3 target) {
-	float3 up = { 0.0f, 1.0f, 0.0f }; // デフォルトの前方 (+Z)
-	float3 targetNorm = target;
-	targetNorm.normalize(); // 正規化
-
-	float3 axis = GetFloat3Cross(up, targetNorm); // 回転軸
-	float dot = GetFloat3Dot(up, targetNorm); // 内積
-	float angle = acosf(dot); // 角度（ラジアン）
-
-	// 回転が不要な場合（すでに一致している）
-	if (fabs(dot - 1.0f) < FLT_EPSILON) {
-		rotation *= { 1, 0, 0, 0 }; // 単位クォータニオン
-	}
-
-	axis.normalize(); // 軸を正規化
-	rotation = Quaternion(angle, axis);
+void Transform::SetAxisY(Vector3 target, Vector3 right) {
+	Vector3 targetNorm = target.getNormalized();	//新しいY軸
+	Vector3 rightNorm = right.getNormalized();		//基準となるX軸
+	Vector3 newZ = rightNorm.cross(targetNorm).getNormalized(); //二つをもとに新しいZ軸を計算
+	rotation = Quaternion({ right, targetNorm, newZ });	//3軸の方向からクォータニオンを作成
 }
-void Transform::SetAxisZ(Vector3 target) {
-	float3 forward = { 0.0f, 0.0f, 1.0f }; // デフォルトの前方 (+Z)
-	float3 targetNorm = target;
-	targetNorm.normalize(); // 正規化
-
-	float3 axis = GetFloat3Cross(forward, targetNorm); // 回転軸
-	float dot = GetFloat3Dot(forward, targetNorm); // 内積
-	float angle = acosf(dot); // 角度（ラジアン）
-
-	// 回転が不要な場合（すでに一致している）
-	if (fabs(dot - 1.0f) < FLT_EPSILON) {
-		rotation *= { 1, 0, 0, 0 }; // 単位クォータニオン
-	}
-
-	axis.normalize(); // 軸を正規化
-	rotation = Quaternion(angle, axis);
+void Transform::SetAxisZ(Vector3 target, Vector3 up) {
+	Vector3 targetNorm = target.getNormalized();	//新しいZ軸
+	Vector3 upNorm = up.getNormalized();		//基準となるY軸
+	Vector3 newX = upNorm.cross(targetNorm).getNormalized(); //二つをもとに新しいX軸を計算
+	rotation = Quaternion({ newX, upNorm, targetNorm });	//3軸の方向からクォータニオンを作成
 }

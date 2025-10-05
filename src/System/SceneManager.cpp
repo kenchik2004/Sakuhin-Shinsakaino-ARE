@@ -7,6 +7,7 @@
 #include "System/Components/Camera.h"
 #include "algorithm"
 #include "System/Shader.h"
+#include <System/Utils/Render.h>
 
 #define SORT
 //#define USE_DEBUG_DRAW
@@ -654,7 +655,7 @@ void SceneManager::DrawCycleForOneScene(SceneP scene) {
 
 	SetUseLighting(false);
 	SetLightEnable(false);
-+	scene->DebugDraw();
+	scene->DebugDraw();
 	std::for_each(objs.begin(), objs.end(), [&comps](ObjectWP& obj) {
 		if (!obj)
 			return;
@@ -743,12 +744,20 @@ void SceneManager::Draw()
 	}
 	DrawCycleForOneScene(current_scene);
 	//最後にカレントシーンのカレントカメラが持っている描画情報だけバックバッファに書き込む
-	SetDrawScreen(DX_SCREEN_BACK);
-	if (current_scene)
-		if (current_scene->GetCurrentCamera()) {
-			ClearDrawScreen();
-			DrawGraph(0, 0, SceneManager::GetCurrentScene()->GetCurrentCamera()->my_screen->GetHandle(), true);
+	SetRenderTarget(GetBackBuffer(), GetDepthStencil());
+	if (current_scene) {
+		auto current_camera = current_scene->GetCurrentCamera();
+		auto debug_camera = current_scene->GetDebugCamera();
+		if (debug_camera) {
+			if (debug_camera->status.status_bit.is(CompStat::STATUS::ACTIVE))
+				current_camera = debug_camera;
 		}
+		if (auto camera = current_camera.lock()) {
+			ClearColor(Color::GRAY);
+			int a = DrawExtendGraph(0, 0, SCREEN_W, SCREEN_H, *camera->my_screen, true);
+			a++;
+		}
+	}
 	Shader::updateFileWatcher();
 
 }

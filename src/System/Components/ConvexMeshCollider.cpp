@@ -42,23 +42,20 @@ void ConvexMeshCollider::DebugDraw()
 
 
 
-	for (int i = 0; i < ref_poly_->VertexNum; i++) {
-		Vector3 p0 = cast(ref_poly_->Vertexs[i].Position) * owner->transform->scale.x;
-		Vector3 p1 = cast(ref_poly_->Vertexs[(i + 1) < ref_poly_->VertexNum ? i + 1 : 0].Position) * owner->transform->scale.x;
-		Vector3 p2 = cast(ref_poly_->Vertexs[(i + 2) < ref_poly_->VertexNum ? i + 2 : 1].Position) * owner->transform->scale.x;
-		Vector3 p3 = cast(ref_poly_->Vertexs[(i + 3) < ref_poly_->VertexNum ? i + 3 : 2].Position) * owner->transform->scale.x;
+	for (int i = 0; i < ref_poly_->PolygonNum; i++) {
+		Vector3 p0 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[0]].Position) * owner->transform->scale.x;
+		Vector3 p1 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[1]].Position) * owner->transform->scale.x;
+		Vector3 p2 = cast(ref_poly_->Vertexs[ref_poly_->Polygons[i].VIndex[2]].Position) * owner->transform->scale.x;
 		p0 = trns.q.rotate(p0);
 		p1 = trns.q.rotate(p1);
 		p2 = trns.q.rotate(p2);
-		p3 = trns.q.rotate(p3);
 		p0 += trns.p;
 		p1 += trns.p;
 		p2 += trns.p;
-		p3 += trns.p;
 		// 頂点を使用してワイヤーフレームを描画する
 		DrawLine3D(cast(p0), cast(p1), Color::GREEN);
-		DrawLine3D(cast(p0), cast(p2), Color::GREEN);
-		DrawLine3D(cast(p0), cast(p3), Color::GREEN);
+		DrawLine3D(cast(p1), cast(p2), Color::GREEN);
+		DrawLine3D(cast(p2), cast(p0), Color::GREEN);
 	}
 }
 

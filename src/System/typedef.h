@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 constexpr float PI = 3.1415926535f;		//円周率
-constexpr float p = PI / 180;			//円周率/180(Euler->Radian)
-constexpr float p_ = 180 / PI;			//180/円周率(Radian->Euler)
-#define DEG2RAD(deg) deg*p		//オイラー角->ラジアン角の変換
-#define RAD2DEG(rad) rad*p_		//ラジアン角->オイラー角の変換
+constexpr float RADIAN = PI / 180;			//円周率/180(Euler->Radian)
+constexpr float EULER = 180 / PI;			//180/円周率(Radian->Euler)
+#define DEG2RAD(deg) deg*RADIAN		//オイラー角->ラジアン角の変換
+#define RAD2DEG(rad) rad*EULER		//ラジアン角->オイラー角の変換
 
 
 #define NON_COPYABLE(CLASS)										\
