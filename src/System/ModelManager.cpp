@@ -487,7 +487,12 @@ void Animation::Update(float speed)
 {
 	current_time += Time::RealDeltaTime() * 60 * speed;
 	for (auto& call_back : call_backs) {
-		if (!call_back.is_executed && current_time > call_back.ex_frame)
+		//コールバックを実行する条件
+		//1.コールバックがまだ実行されていない
+		//2.スピードによって再生・逆再生が変わるので、正なら2a、負なら2bの条件を見る
+		//2a.現在のフレームが実行フレームより前か(順再生なので、指定フレームよりも大きい数字で実行)
+		//2b.現在のフレームが実行フレームよりも後か(逆再生なので指定フレームより若い数字で実行)
+		if (!call_back.is_executed && (speed > 0 ? (current_time >= call_back.ex_frame) : (current_time <= call_back.ex_frame)))
 		{
 			call_back.is_executed = true;
 			if (call_back.function)
@@ -507,12 +512,15 @@ void Animation::SetCallBack(std::function<void()>& call_back, float execute_fram
 {
 	std::string name(method_name);
 	auto it = method_names.find(name);
-	if (it != method_names.end())
-		return;
 	AnimationCallBack anim_call_back;
 	anim_call_back.function = std::move(call_back);
 	anim_call_back.ex_frame = execute_frame;
 	anim_call_back.is_executed = false;
+	//すでに存在するメソッド名の場合、上書きする(大抵同じ名前で登録する場合は実行フレームの変更が目的だろう)
+	if (it != method_names.end()) {
+		call_backs[it->second-1] = std::move(anim_call_back);
+		return;
+	}
 	call_backs.push_back(std::move(anim_call_back));
 	method_names[name] = call_backs.size();
 

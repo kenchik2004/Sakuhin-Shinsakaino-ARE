@@ -27,9 +27,9 @@ namespace SampleAnimation
 		std::function reload_call = [reload_se]() {
 			reload_se->PlayOneShot();
 			};
-		std::function on_jump_finish = [&]() {my_animator->Play("idle", true); };
-		std::function on_salute_finish = [&]() {my_animator->Play("idle", true, 0, 0.8f); };
-		std::function on_reload_finish = [&]() {my_animator->Play("aim", true); };
+		std::function on_jump_finish = [=]() {my_animator->Play("idle", true, 0.0f, 1.0f); };
+		std::function on_salute_finish = [=]() {my_animator->Play("idle", true, 5.0f, 0.2f); };
+		std::function on_reload_finish = [=]() {my_animator->Play("aim", true); };
 		my_animator->SetAnimationCallBack("reload", reload_call, 30, "reload_se");
 		my_animator->SetAnimationCallBack("reload", on_reload_finish, 200, "on_reload_finish");
 		my_animator->SetAnimationCallBack("jump", on_jump_finish, 130, "on_jump_finish");
@@ -45,17 +45,35 @@ namespace SampleAnimation
 		if (Input::GetKeyDown(KeyCode::NumPad3))
 			my_animator->PlayIfNoSame("run", true);
 		if (Input::GetKeyDown(KeyCode::NumPad4))
-			my_animator->Play("jump", false, 0, 0.2f, true);
+			my_animator->Play("jump", false, (my_animator->anim_speed > 0) ? 0 : (130 / 60.0f), 0.2f, true);
 		if (Input::GetKeyDown(KeyCode::NumPad5))
-			my_animator->Play("salute", false);
+			my_animator->Play("salute", false, (my_animator->anim_speed > 0) ? 0 : (170 / 60.0f), 0.2f);
 		if (Input::GetKeyDown(KeyCode::NumPad6))
 			my_animator->PlayIfNoSame("aim", true);
 		if (Input::GetKeyDown(KeyCode::NumPad7))
-			my_animator->Play("reload", false);
+			my_animator->Play("reload", false, (my_animator->anim_speed > 0) ? 0 : (200 / 60.0f));
+
+		if (Input::GetKeyDown(KeyCode::Return)) {
+			bool normal_play = (my_animator->anim_speed *= -1.0f) > 0;
+			//逆再生の場合、アニメーションの最後のフレームで実行するコールバックは、
+			//最初のフレームに移動させないといけない
+			std::function on_jump_finish = [=]() {my_animator->Play("idle", true, 0.0f, 1.0f); };
+			std::function on_salute_finish = [=]() {my_animator->Play("idle", true, 5.0f, 0.2f); };
+			std::function on_reload_finish = [=]() {my_animator->Play("aim", true); };
+			my_animator->SetAnimationCallBack("reload", on_reload_finish, normal_play ? 200 : 0, "on_reload_finish");
+			my_animator->SetAnimationCallBack("jump", on_jump_finish, normal_play ? 130 : 0, "on_jump_finish");
+			my_animator->SetAnimationCallBack("salute", on_salute_finish, normal_play ? 170 : 0, "on_salute_finish");
+		}
+		if (Input::GetKeyDown(KeyCode::Space)) {
+			int model_texture_handle = MV1GetMaterialNormalMapTexture(my_model->GetModelHandle(), 0);
+			int x, y;
+			GetGraphTextureSize(model_texture_handle, &x, &y);
+
+			SaveDrawValidGraph(model_texture_handle, 0, x, 0, y, "data/player/model_texture.png", DX_IMAGESAVETYPE_PNG);
+		}
+
 	}
-	void SampleAnimationObject::DebugDraw()
-	{
-	}
+
 	void SampleAnimationObject::Exit()
 	{
 	}

@@ -191,25 +191,25 @@ int DebugCamera::Init()
 
 void DebugCamera::Update()
 {
-	auto parent = owner->transform->parent.lock();
-	auto owner_trns = owner->transform;
-	if (Input::GetKey(KeyCode::W))
-		parent->MovePosition(owner_trns->AxisZ() * 1000 * Time::RealDeltaTime());
-	if (Input::GetKey(KeyCode::S))
-		parent->MovePosition(-owner_trns->AxisZ() * 1000 * Time::RealDeltaTime());
-	if (Input::GetKey(KeyCode::A))
-		parent->MovePosition(-owner_trns->AxisX() * 1000 * Time::RealDeltaTime());
-	if (Input::GetKey(KeyCode::D))
-		parent->MovePosition(owner_trns->AxisX() * 1000 * Time::RealDeltaTime());
-	if (Input::GetKey(KeyCode::Q))
-		parent->MovePosition(-owner_trns->AxisY() * 1000 * Time::RealDeltaTime());
-	if (Input::GetKey(KeyCode::E))
-		parent->MovePosition(owner_trns->AxisY() * 1000 * Time::RealDeltaTime());
-	Vector2 mouse_move = Input::GetMouseDelta();
-	Quaternion qx = Quaternion(mouse_move.x * Time::RealDeltaTime() * 0.2f, { 0,1,0 });
-	Quaternion qy = Quaternion(mouse_move.y * Time::RealDeltaTime() * 0.2f, { 1,0,0 });
-
 	if (Input::GetMouseButtonRepeat(MouseButton::ButtonRight)) {
+		auto parent = owner->transform->parent.lock();
+		auto owner_trns = owner->transform;
+		if (Input::GetKey(KeyCode::W))
+			parent->MovePosition(owner_trns->AxisZ() * 1000 * Time::RealDeltaTime());
+		if (Input::GetKey(KeyCode::S))
+			parent->MovePosition(-owner_trns->AxisZ() * 1000 * Time::RealDeltaTime());
+		if (Input::GetKey(KeyCode::A))
+			parent->MovePosition(-owner_trns->AxisX() * 1000 * Time::RealDeltaTime());
+		if (Input::GetKey(KeyCode::D))
+			parent->MovePosition(owner_trns->AxisX() * 1000 * Time::RealDeltaTime());
+		if (Input::GetKey(KeyCode::Q))
+			parent->MovePosition(-owner_trns->AxisY() * 1000 * Time::RealDeltaTime());
+		if (Input::GetKey(KeyCode::E))
+			parent->MovePosition(owner_trns->AxisY() * 1000 * Time::RealDeltaTime());
+		Vector2 mouse_move = Input::GetMouseDelta();
+		Quaternion qx = Quaternion(mouse_move.x * Time::RealDeltaTime() * 0.2f, { 0,1,0 });
+		Quaternion qy = Quaternion(mouse_move.y * Time::RealDeltaTime() * 0.2f, { 1,0,0 });
+
 		owner->transform->local_rotation = qy * owner->transform->local_rotation;
 		parent->AddRotation(qx);
 	}

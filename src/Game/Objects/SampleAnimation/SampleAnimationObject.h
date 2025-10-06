@@ -12,7 +12,6 @@ namespace SampleAnimation
 		USING_SUPER(SampleAnimationObject);
 		int Init() override;
 		void Update() override;
-		void DebugDraw() override;
 		void Exit() override;
 	private:
 		ModelRendererWP my_model = nullptr;

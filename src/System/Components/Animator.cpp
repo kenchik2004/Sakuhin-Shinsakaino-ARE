@@ -105,6 +105,7 @@ void Animator::Update()
 			old_anim->Update(anim_speed);
 			//アニメーションの時間を進める
 			//ループしているかどうかはこの段階では知ったこっちゃないので、とりあえず進めるだけ進める
+			old_anim->current_time = std::clamp(old_anim->current_time, 0.0f, old_anim->total_time);
 			MV1SetAttachAnimTime(model->GetModelHandle(), old_anim->attached_index, old_anim->current_time);
 			old_anim->blend_rate -= (1.0f / anim_blend_time) * Time::RealDeltaTime();
 			old_anim->blend_rate = std::clamp(old_anim->blend_rate, 0.0f, 1.0f);
@@ -114,11 +115,12 @@ void Animator::Update()
 	blend_rate_total = max(FLT_EPSILON, blend_rate_total);	//0割り防止
 	//ブレンド率を設定する
 	if (current_anim) {
-		MV1SetAttachAnimBlendRate(model->GetModelHandle(), current_anim->attached_index, current_anim->blend_rate / blend_rate_total);
+		float rate = current_anim->blend_rate / blend_rate_total;
+		MV1SetAttachAnimBlendRate(model->GetModelHandle(), current_anim->attached_index, rate);
 	}
 	for (auto& old_anim : old_anims) {
 		if (old_anim) {
-			MV1SetAttachAnimBlendRate(model->GetModelHandle(), old_anim->attached_index, old_anim->blend_rate / blend_rate_total);
+
 			//ブレンド率が0になったらアタッチを外して、アニメーションを消す
 			if (old_anim->blend_rate <= 0.0f) {
 
@@ -126,7 +128,12 @@ void Animator::Update()
 				old_anim->attached_index = -1;
 				old_anim->current_time = 0;
 				old_anim.reset();
+				//ここから先はnullアクセスをしないためにcontinue
+				continue;
 			}
+			float rate = old_anim->blend_rate / blend_rate_total;
+			MV1SetAttachAnimBlendRate(model->GetModelHandle(), old_anim->attached_index, rate);
+
 		}
 	}
 
@@ -193,6 +200,7 @@ void Animator::Play(std::string_view name, bool loop, float start_time, float bl
 			current_anim->blend_rate = 0.0f;
 			current_anim->InitCallBacks();
 			anim_loop = loop;
+			current_anim->Update(anim_speed);
 			return;
 		}
 		//アタッチに失敗した場合は、現在のアニメーションを変更しないので、先にアタッチを試みる
@@ -239,6 +247,7 @@ void Animator::Play(std::string_view name, bool loop, float start_time, float bl
 			select->blend_rate = 0.0f;
 			current_anim = select;
 			anim_loop = loop;
+			current_anim->Update(anim_speed);
 		}
 		return;
 	}

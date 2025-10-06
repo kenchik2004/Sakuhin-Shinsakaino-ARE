@@ -38,14 +38,15 @@ namespace SampleAnimation {
 		if (!CheckForLoading())
 			return 0;
 		player = SceneManager::Object::Create<SampleAnimationObject>();
-		player->transform->position = Vector3(5, 0, 0);
+		player->transform->position = Vector3(10, 0, 0);
 		player2 = SceneManager::Object::Create<SampleAnimationObject>();
-		player2->transform->position = Vector3(-5, 0, 0);
+		player2->transform->position = Vector3(-10, 0, 0);
 		player3 = SceneManager::Object::Create<SampleAnimationObject>();
 
 		camera = SceneManager::Object::Create<CameraObject>();
 		//SceneManager::Object::Create<DebugCameraObject>();
-		camera->transform->position = Vector3(0, 5, -10);
+		camera->transform->position = Vector3(0, 10, -20);
+		camera->transform->SetAxisZ(-camera->transform->position.getNormalized());
 
 		return 0;
 	}
@@ -55,14 +56,7 @@ namespace SampleAnimation {
 		if (!CheckForLoading())
 			return;
 		auto camera_sp = camera.lock();
-		if (Input::GetKey(KeyCode::Left))
-			player->transform->local_position.x -= Time::DeltaTime() * 5;
-		if (Input::GetKey(KeyCode::Right))
-			player->transform->local_position.x += Time::DeltaTime() * 5;
-		if (Input::GetKey(KeyCode::Up))
-			player2->transform->local_position.x += Time::DeltaTime() * 5;
-		if (Input::GetKey(KeyCode::Down))
-			player2->transform->local_position.x -= Time::DeltaTime() * 5;
+
 
 #if 1
 
@@ -78,10 +72,17 @@ namespace SampleAnimation {
 			camera->transform->MovePosition(camera->transform->AxisY() * -5);
 		if (Input::GetKey(KeyCode::E))
 			camera->transform->MovePosition(camera->transform->AxisY() * 5);
+		Vector2 rot_ratio = { 0,0 };
 		if (Input::GetKey(KeyCode::Left))
-			camera->transform->AddRotation(Vector3(0, -90 * Time::DeltaTime(), 0));
+			rot_ratio.y -= Time::DeltaTime()*60;
 		if (Input::GetKey(KeyCode::Right))
-			camera->transform->AddRotation(Vector3(0, 90 * Time::DeltaTime(), 0));
+			rot_ratio.y += Time::DeltaTime()*60;
+		if (Input::GetKey(KeyCode::Up))
+			rot_ratio.x -= Time::DeltaTime()*60;
+		if (Input::GetKey(KeyCode::Down))
+			rot_ratio.x += Time::DeltaTime()*60;
+		camera->transform->AddRotation({ rot_ratio.x,rot_ratio.y,0 });
+		camera->transform->SetAxisZ(camera->transform->AxisZ());
 #endif
 
 		if (Input::GetKeyDown(KeyCode::Space)) {
@@ -102,6 +103,10 @@ namespace SampleAnimation {
 	void SampleAnimationScene::LateDraw()
 	{
 		DrawFormatString(0, 0, Color::RED, "FPS:%f", Time::GetFPS());
+		DrawString(0, 21, ShiftJISToUTF8("テンキーの1~7でそれぞれのアニメーションを再生します").c_str(), Color::YELLOW);
+		DrawString(0, 42, ShiftJISToUTF8("4,5,7のアニメーションはコールバックで音が鳴ったり、次のアニメーションに勝手に推移します").c_str(), Color::YELLOW);
+		DrawString(0, 66, ShiftJISToUTF8("エンターキーでアニメーションの再生、逆再生を切り替えられます").c_str(), Color::YELLOW);
+
 	}
 
 	void SampleAnimationScene::Exit()

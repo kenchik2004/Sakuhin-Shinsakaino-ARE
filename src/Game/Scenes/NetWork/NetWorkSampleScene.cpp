@@ -11,7 +11,7 @@
 #include <cstdint>
 #include <cstring>
 
-#define SERVER
+//#define SERVER
 namespace NetWorkTest {
 
 	std::unique_ptr<NetWorkManagerBase> net_manager;
@@ -380,10 +380,10 @@ namespace NetWorkTest {
 		{
 			if (udp_network) {
 				std::string test_msg = "UDP Test Message";
-				SendPacket(udp_network, { 192,168,0,103 }, 11453, PACKET_TYPE_TEXT, test_msg.data(), static_cast<u32>(test_msg.size()));
+				SendPacket(udp_network, { 127,0,0,1 }, 11453, PACKET_TYPE_TEXT, test_msg.data(), static_cast<u32>(test_msg.size()));
 			}
 
-			IPDATA other_ip = { 192,168,0,103 };
+			IPDATA other_ip = { 127,0,0,1 };
 			auto net = net_manager->Connect(other_ip, 11451);
 			if (net) {
 				vchat_network = net;
@@ -487,6 +487,8 @@ namespace NetWorkTest {
 			DxLib::DrawCircleAA(p.x, p.y, 20.0f, 32, Color::MAGENTA, true);
 		}
 		DxLib::DrawFormatString(0, 0, Color::WHITE, "FPS:%.1f", Time::GetFPS());
+		IPDATA my_ip = net_manager->GetMyIP();
+		DrawFormatString(400, 0, Color::WHITE, "Your IP Address is %d.%d.%d.%d", my_ip.d1, my_ip.d2, my_ip.d3, my_ip.d4);
 	}
 
 	void NetWorkSampleScene::Exit()

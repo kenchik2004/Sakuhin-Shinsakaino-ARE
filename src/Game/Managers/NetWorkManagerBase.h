@@ -101,6 +101,7 @@ public:
 	};
 	UDPNetWork* OpenUDPSocket(unsigned short port = 35001);
 	UDPNetWork* GetUDPSocket() const { return udp_network.get(); }
+	const IPDATA& GetMyIP() const { return my_ip; }
 	std::vector<char> CreatePacket(PacketType type, const void* payload, u32 sizeBytes, IPDATA overrided_ip = { 0,0,0,0 });
 public:
 	static constexpr int NETWORK_MANAGER_MODE_LISTEN = 0;

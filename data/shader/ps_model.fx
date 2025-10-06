@@ -144,9 +144,9 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
     float3 V = normalize(eye_position_ - input.world_position_);
 	
 	
-    float3 light = float3(0, 0, 5); // ライトのポジション
+    float3 light = float3(0, 1, 0); // ライトのポジション
 	
-    float3 L = -normalize(light);
+    float3 L = normalize(light);
 	
 	//------------------------------------------------------------
 	// シャドウ
@@ -217,7 +217,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	//------------------------------------------------------------
 	// 法線マップ
 	//------------------------------------------------------------
-    N = Normalmap(N, input.world_position_, uv);
+    //N = Normalmap(N, input.world_position_, uv);
 
 	//------------------------------------------------------------
 	// テクスチャカラーを読み込み
@@ -232,7 +232,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	// リニア化 sRGBのテクスチャ → Linearのテクスチャ
     textureColor.rgb = pow(textureColor.rgb, 2.2);
 	
-    float3 albedo = textureColor.rgb * input.diffuse_.rgb;
+    float3 albedo = textureColor.rgb ;
 	
     output.color0_ = textureColor;
     //output.color0_.rgb = N; // * input.diffuse_;
@@ -311,7 +311,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
 	
 
-    float3 lightColor = float3(1, 1, 1) * 5; // 光源の明るさ, 色
+    float3 lightColor = float3(1, 1, 1)*10; // 光源の明るさ, 色
 
     float NdotL = saturate(dot(N, L)) + 0.000001;
     float NdotV = saturate(dot(N, V)) + 0.000001;
@@ -319,10 +319,10 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
     float NdotH = saturate(dot(N, H)) + 0.000001;
     float LdotH = saturate(dot(L, H)) + 0.000001;
 	
-    float roughness = 0.7; // ラフ度 0.0:つるつる ～ 1.0:ざらざら (別名:glossiness, shininess)
+    float roughness = 0.5; // ラフ度 0.0:つるつる ～ 1.0:ざらざら (別名:glossiness, shininess)
     float metallic = 0.5; // 金属度 0.0:非金属   ～ 1.0:金属     (別名:metalness)
 	
-    float3 specularColor = lerp(float3(0.4, 0.4, 0.4), albedo, metallic);
+    float3 specularColor = lerp(float3(0.04,0.04,0.04), albedo, metallic);
 	
 	
 	//-------------------------------------------------------------
@@ -365,7 +365,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
     float3 brdf = roughness4 * rcp(4.0 * PI * denominator * denominator * (roughness + 0.5));
 	
-    float3 specular = brdf * specularColor * lightColor;
+    float3 specular = brdf * specularColor * lightColor*NdotL;
 
 #endif	
 	
@@ -378,7 +378,7 @@ PS_OUTPUT main(PS_INPUT_MODEL input)
 	
 	// ambient light 環境光
 	// 周辺の明るさを近似
-    float3 ambient = float3(0.5, 0.5, 0.5);
+    float3 ambient = float3(1.0, 1.0, 1.0);
 
 	
     output.color0_.rgb *= diffuse + ambient;
