@@ -13,6 +13,9 @@ namespace SampleAnimation
 		int Init() override;
 		void Update() override;
 		void Exit() override;
+		void ManipulateAsAnotherPlayer(unsigned int anim_state);
+		unsigned int GetCurrentAnimState();
+		bool manipulate_mode = false;
 	private:
 		ModelRendererWP my_model = nullptr;
 		AnimatorWP my_animator = nullptr;

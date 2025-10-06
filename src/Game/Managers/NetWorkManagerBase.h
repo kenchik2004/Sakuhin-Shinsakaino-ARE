@@ -73,8 +73,8 @@ protected:
 	std::thread check_connection_thread;
 	std::thread check_disconnection_thread;
 	IPDATA my_ip = { 127,0,0,1 };
-	unsigned short port_num = 11451;
-	unsigned short udp_port_num = 11452;
+	unsigned short port_num = 0;
+	unsigned short udp_port_num = 0;
 
 
 private:
@@ -102,6 +102,8 @@ public:
 	UDPNetWork* OpenUDPSocket(unsigned short port = 35001);
 	UDPNetWork* GetUDPSocket() const { return udp_network.get(); }
 	const IPDATA& GetMyIP() const { return my_ip; }
+	const unsigned short& GetPort() const { return port_num; }
+	const unsigned short& GetUDPPort() const { return udp_port_num; }
 	std::vector<char> CreatePacket(PacketType type, const void* payload, u32 sizeBytes, IPDATA overrided_ip = { 0,0,0,0 });
 public:
 	static constexpr int NETWORK_MANAGER_MODE_LISTEN = 0;

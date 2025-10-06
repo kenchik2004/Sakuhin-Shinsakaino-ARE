@@ -10,8 +10,11 @@
 #include <vector>
 #include <cstdint>
 #include <cstring>
+#include "Game/Objects/SampleAnimation/SampleAnimationObject.h"
+#include "System/Objects/CameraObject.h"
 
-//#define SERVER
+#define SERVER
+//#define USE_VOICE_CHAT
 namespace NetWorkTest {
 
 	std::unique_ptr<NetWorkManagerBase> net_manager;
@@ -20,10 +23,17 @@ namespace NetWorkTest {
 
 	std::string received_text = "";
 	std::string send_text = "";
-	Vector3 player_position = Vector3(300.0f, 300.0f, 0.0f);
-	std::vector<std::pair<u32, Vector3>> another_player_position;
+	SafeWeakPtr<SampleAnimation::SampleAnimationObject> player = nullptr;
+	std::vector<std::pair<u32, SafeWeakPtr<SampleAnimation::SampleAnimationObject>>> another_players;
+	IPDATA another_ip = { 127,0,0,0 };
+	unsigned short another_port = 0;
+	struct PlayerData {
+		Vector3 position;
+		unsigned int anim_state;
+	};
 
 
+#ifdef USE_VOICE_CHAT
 
 	// 送信用キュー（録音コールバックからはここに積むだけ）
 	struct AudioChunk {
@@ -40,6 +50,7 @@ namespace NetWorkTest {
 	// グローバルI/O
 	static Audio::WinMMRecorder g_recorder(48000U, 16U, 1U, 5U);
 	static Audio::WinMMWavePlayer g_player;
+#endif
 
 
 
@@ -71,12 +82,18 @@ namespace NetWorkTest {
 		return ip;
 	}
 	// 送信元キーでプレイヤー座標をUpsert
-	static inline void UpsertPlayer(std::vector<std::pair<u32, Vector3>>& list, IPDATA ip, const Vector3& pos) {
+	static inline void UpsertPlayer(std::vector<std::pair<u32, SafeWeakPtr<SampleAnimation::SampleAnimationObject>>>& list, IPDATA ip, const PlayerData& data) {
 		u32 key = MakeIPKey(ip);
 		for (auto& kv : list) {
-			if (kv.first == key) { kv.second = pos; return; }
+			if (kv.first == key) {
+				kv.second->transform->position = data.position;
+				kv.second->ManipulateAsAnotherPlayer(data.anim_state);
+				return;
+			}
 		}
-		list.emplace_back(key, pos);
+		auto obj = SceneManager::Object::Create<SampleAnimation::SampleAnimationObject>("AnotherPlayer" + std::to_string(key));
+		obj->manipulate_mode = true;
+		list.emplace_back(key, obj);
 	}
 
 	// 受信処理: 蓄積→フレーミング→種別毎に処理
@@ -198,7 +215,7 @@ namespace NetWorkTest {
 					for (u32 k : updatedKeys) { if (k == key) { seen = true; break; } }
 					if (!seen) {
 						const Vector3 pos = *reinterpret_cast<Vector3*>(payload);
-						UpsertPlayer(another_player_position, hdr->ip, pos);
+						UpsertPlayer(another_players, hdr->ip, pos);
 						updatedKeys.push_back(key);
 					}
 				}
@@ -216,8 +233,10 @@ namespace NetWorkTest {
 
 			switch (static_cast<PacketType>(hdr->type)) {
 			case PACKET_TYPE_WAVE:
+#ifdef USE_VOICE_CHAT
 				// そのままプレイヤーに渡す（ヘッダ/PCM どちらも可。プレイヤー内でヘッダ検出）
 				g_player.Feed(payload, hdr->sizeBytes);
+#endif
 				break;
 			case PACKET_TYPE_COMMAND:
 				// 必要に応じてコマンド処理を実装
@@ -248,8 +267,10 @@ namespace NetWorkTest {
 			u8* payload = data + iterator + sizeof(PacketHeader);
 			switch (static_cast<PacketType>(hdr->type)) {
 			case PACKET_TYPE_WAVE:
+#ifdef USE_VOICE_CHAT
 				// そのままプレイヤーに渡す（ヘッダ/PCM どちらも可。プレイヤー内でヘッダ検出）
 				g_player.Feed(payload, hdr->sizeBytes);
+#endif
 				break;
 			case PACKET_TYPE_TEXT: {
 				// バイナリテキストを文字列化（ヌル終端無し想定）
@@ -262,7 +283,7 @@ namespace NetWorkTest {
 
 				if (hdr->sizeBytes >= sizeof(Vector3)) {
 					const Vector3 pos = *reinterpret_cast<Vector3*>(payload);
-					UpsertPlayer(another_player_position, hdr->ip, pos);
+					UpsertPlayer(another_players, hdr->ip, pos);
 				}
 				// 必要に応じて位置情報処理を実装
 				break;
@@ -284,6 +305,7 @@ namespace NetWorkTest {
 		}
 	}
 
+#ifdef USE_VOICE_CHAT
 	// 例えばアプリ起動時にセットアップ
 	void SetupRecorderForStreaming(NetWork** networkPtr) {
 
@@ -326,9 +348,21 @@ namespace NetWorkTest {
 			}
 		}
 	}
+#endif
 
 	int NetWorkSampleScene::Init()
 	{
+
+		ModelManager::LoadAsModel("data/player/model.mv1", "player_model");
+		ModelManager::LoadAsAnimation("data/player/anim_stand.mv1", "idle");
+		ModelManager::LoadAsAnimation("data/player/anim_walk.mv1", "walk");
+		ModelManager::LoadAsAnimation("data/player/anim_run.mv1", "run");
+		ModelManager::LoadAsAnimation("data/player/anim_jump.mv1", "jump");
+		ModelManager::LoadAsAnimation("data/player/anim_salute.mv1", "salute");
+		ModelManager::LoadAsAnimation("data/player/anim_aim.mv1", "aim");
+		ModelManager::LoadAsAnimation("data/player/anim_reload.mv1", "reload");
+		AudioManager::Load("data/Sound/reload.mp3", "reload_se", false);
+
 #ifndef SERVER
 		net_manager = std::make_unique<NetWorkManagerBase>(NetWorkManagerBase::NETWORK_MANAGER_MODE_CONNECT, 11451);
 		udp_network = net_manager->OpenUDPSocket(11452); // 必要に応じて UDP も開く
@@ -344,6 +378,8 @@ namespace NetWorkTest {
 			ProcessReceivedUDPBytes(reinterpret_cast<u8*>(data), length);
 			};
 #endif // SERVER
+		player = SceneManager::Object::Create<SampleAnimation::SampleAnimationObject>("Player");
+		SceneManager::Object::Create<CameraObject>()->transform->position = { 0,10,-10 };
 
 		net_manager->SetOnNewConnectionCallback([this](NetWork* new_connect) {
 			is_connected = true;
@@ -352,20 +388,24 @@ namespace NetWorkTest {
 			vchat_network->on_receive = [this](void* data, size_t length) {
 				ProcessReceivedBytes(reinterpret_cast<u8*>(data), length);
 				};
-
+#ifdef USE_VOICE_CHAT
 			// 録音開始（ネットワーク接続後）
 			g_recorder.Start();
+#endif
 			});
 
 		net_manager->SetOnDisconnectionCallback([this]() {
 			is_connected = false;
 			vchat_network = nullptr;
+#ifdef USE_VOICE_CHAT
 			if (g_recorder.IsRunning())
 				g_recorder.Stop();
 			g_player.Stop();
+#endif
 			});
-
+#ifdef USE_VOICE_CHAT
 		SetupRecorderForStreaming(&vchat_network);
+#endif
 		return 0;
 	}
 
@@ -374,17 +414,18 @@ namespace NetWorkTest {
 		net_manager->Update();
 
 		// 録音コールバックから集めたデータをここで送信
+#ifdef USE_VOICE_CHAT
 		DrainAudioChunks();
+#endif
 #ifndef SERVER
 		if (Input::GetKeyDown(KeyCode::Space) && !is_connected)
 		{
 			if (udp_network) {
 				std::string test_msg = "UDP Test Message";
-				SendPacket(udp_network, { 127,0,0,1 }, 11453, PACKET_TYPE_TEXT, test_msg.data(), static_cast<u32>(test_msg.size()));
+				SendPacket(udp_network, another_ip, 11453, PACKET_TYPE_TEXT, test_msg.data(), static_cast<u32>(test_msg.size()));
 			}
 
-			IPDATA other_ip = { 127,0,0,1 };
-			auto net = net_manager->Connect(other_ip, 11451);
+			auto net = net_manager->Connect(another_ip, another_port);
 			if (net) {
 				vchat_network = net;
 				is_connected = true;
@@ -393,8 +434,10 @@ namespace NetWorkTest {
 					ProcessReceivedBytes(reinterpret_cast<u8*>(data), length);
 					};
 
+#ifdef USE_VOICE_CHAT
 				// 録音開始（ネットワーク接続後）
 				g_recorder.Start();
+#endif
 			}
 		}
 #endif
@@ -418,16 +461,48 @@ namespace NetWorkTest {
 				send_text.clear();
 			}
 		}
+#ifndef SERVER 
+		else {
+			while (char ch = DxLib::GetInputChar(true)) {
+
+
+				if (ch == '\b' && !send_text.empty()) {
+					send_text.pop_back();
+				}
+				else if (ch == 46 || (ch >= 48 && ch <= 58)) { // IPで使うのは0~9とドットのみ
+					send_text.push_back(ch);
+				}
+				else
+					break;
+			}
+			if (Input::GetKeyDown(KeyCode::Return)) {
+				std::vector<std::string> octets;
+				std::string segment;
+				std::istringstream tokenStream(send_text);
+				while (std::getline(tokenStream, segment, '.')) {
+					octets.push_back(segment);
+				}
+				if (octets.size() == 5) {
+					another_ip.d1 = static_cast<u8>(std::stoi(octets[0]));
+					another_ip.d2 = static_cast<u8>(std::stoi(octets[1]));
+					another_ip.d3 = static_cast<u8>(std::stoi(octets[2]));
+					another_ip.d4 = static_cast<u8>(std::stoi(octets[3]));
+					another_port = static_cast<unsigned short>(std::stoul(octets[4]));
+				}
+				send_text.clear();
+			}
+		}
+#endif // !SERVER
 
 		if (udp_network) {
 			if (Input::GetKey(KeyCode::Up))
-				player_position.y -= 500.0f * Time::DeltaTime();
+				player->transform->position.z += 10.0f * Time::DeltaTime();
 			if (Input::GetKey(KeyCode::Down))
-				player_position.y += 500.0f * Time::DeltaTime();
+				player->transform->position.z -= 10.0f * Time::DeltaTime();
 			if (Input::GetKey(KeyCode::Left))
-				player_position.x -= 500.0f * Time::DeltaTime();
+				player->transform->position.x -= 10.0f * Time::DeltaTime();
 			if (Input::GetKey(KeyCode::Right))
-				player_position.x += 500.0f * Time::DeltaTime();
+				player->transform->position.x += 10.0f * Time::DeltaTime();
 #ifdef SERVER
 			// サーバーは接続中の全クライアントに送信 -> いわゆるブロードキャスト
 			//権威サーバ方式では、クライアントの位置情報をサーバーが集約して、全クライアントに配信する
@@ -435,22 +510,24 @@ namespace NetWorkTest {
 			//クライアントは、他のクライアントのIPアドレスを知ることができる
 			//ただしそのやり方はマッチングサーバも兼ねる事になるので、権威サーバ方式にするメリットが薄れる
 
-			for (auto& pos : another_player_position) {
+			for (auto& pos : another_players) {
 				IPDATA sender_ip = MakeIPFromKey(pos.first);
 
 				// 自分の位置情報は送らない
-				std::for_each(another_player_position.begin(), another_player_position.end(),
+				std::for_each(another_players.begin(), another_players.end(),
 					[&](const auto& p) {
-						if (p.first != pos.first)
-							SendPacket(udp_network, sender_ip, 11452, PACKET_TYPE_PLAYER_POSITION, &p.second, sizeof(Vector3), MakeIPFromKey(p.first));
+						if (p.first != pos.first) {
+
+							SendPacket(udp_network, sender_ip, 11452, PACKET_TYPE_PLAYER_POSITION, &p.second->transform->position, sizeof(Vector3), MakeIPFromKey(p.first));
+						}
 					});
-				SendPacket(udp_network, sender_ip, 11452, PACKET_TYPE_PLAYER_POSITION, &player_position, sizeof(Vector3));
+				SendPacket(udp_network, sender_ip, 11452, PACKET_TYPE_PLAYER_POSITION, &player->transform->position, sizeof(Vector3));
 			}
 
 			//			SendPacket(udp_network, { 192,168,0,104 }, 11452, PACKET_TYPE_PLAYER_POSITION, &player_position, sizeof(Vector3));
 #else
 
-			SendPacket(udp_network, { 192,168,0,103 }, 11453, PACKET_TYPE_PLAYER_POSITION, &player_position, sizeof(Vector3));
+			SendPacket(udp_network, another_ip, another_port, PACKET_TYPE_PLAYER_POSITION, &player->transform->position, sizeof(Vector3));
 #endif // SERVER
 
 		}
@@ -464,7 +541,11 @@ namespace NetWorkTest {
 		DxLib::DrawString(100, 50, "Client Mode", 0xffff00);
 #endif // SERVER
 
+
+
+#ifdef USE_VOICE_CHAT
 		DxLib::DrawFormatString(100, 200, 0xffffff, "Using recbuffer No.%d", using_recbuffer_num);
+#endif // USE_VOICE_CHAT
 
 		SetFontSize(72);
 		if (is_connected) {
@@ -481,23 +562,28 @@ namespace NetWorkTest {
 		DrawFormatString(100, 400, 0xffffff, "You> %s", send_text.c_str());
 		DxLib::DrawBox(150 + send_text.size() * 12, 421, 160 + send_text.size() * 12, 430, 0xffffff, true);
 		SetFontSize(DEFAULT_FONT_SIZE);
+		/*
 		DxLib::DrawCircleAA(player_position.x, player_position.y, 20.0f, 32, Color::CYAN, true);
-		for (const auto& kv : another_player_position) {
-			const Vector3& p = kv.second;
+		for (const auto& kv : another_players) {
+			const Vector3& p = kv.second->transform->position;
 			DxLib::DrawCircleAA(p.x, p.y, 20.0f, 32, Color::MAGENTA, true);
 		}
+		*/
 		DxLib::DrawFormatString(0, 0, Color::WHITE, "FPS:%.1f", Time::GetFPS());
 		IPDATA my_ip = net_manager->GetMyIP();
-		DrawFormatString(400, 0, Color::WHITE, "Your IP Address is %d.%d.%d.%d", my_ip.d1, my_ip.d2, my_ip.d3, my_ip.d4);
+		DrawFormatString(600, 0, Color::WHITE, "Your IP Address is %d.%d.%d.%d", my_ip.d1, my_ip.d2, my_ip.d3, my_ip.d4);
+		DrawFormatString(600, 30, Color::WHITE, "Open Ports  TCP:%d,UDP:%d", net_manager->GetPort(), net_manager->GetUDPPort());
 	}
 
 	void NetWorkSampleScene::Exit()
 	{
+#ifdef USE_VOICE_CHAT
 		if (g_recorder.IsRunning()) {
 			g_recorder.Stop();
 		}
 		g_player.Stop();
-
+#endif
+		another_players.clear();
 		net_manager.reset();
 	}
 

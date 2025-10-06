@@ -38,6 +38,8 @@ namespace SampleAnimation
 	}
 	void SampleAnimationObject::Update()
 	{
+		if (manipulate_mode)
+			return;
 		if (Input::GetKeyDown(KeyCode::NumPad1))
 			my_animator->PlayIfNoSame("idle", true);
 		if (Input::GetKeyDown(KeyCode::NumPad2))
@@ -64,17 +66,58 @@ namespace SampleAnimation
 			my_animator->SetAnimationCallBack("jump", on_jump_finish, normal_play ? 130 : 0, "on_jump_finish");
 			my_animator->SetAnimationCallBack("salute", on_salute_finish, normal_play ? 170 : 0, "on_salute_finish");
 		}
-		if (Input::GetKeyDown(KeyCode::Space)) {
-			int model_texture_handle = MV1GetMaterialNormalMapTexture(my_model->GetModelHandle(), 0);
-			int x, y;
-			GetGraphTextureSize(model_texture_handle, &x, &y);
 
-			SaveDrawValidGraph(model_texture_handle, 0, x, 0, y, "data/player/model_texture.png", DX_IMAGESAVETYPE_PNG);
-		}
 
 	}
 
 	void SampleAnimationObject::Exit()
 	{
+	}
+	void SampleAnimationObject::ManipulateAsAnotherPlayer(unsigned int anim_state)
+	{
+		switch (anim_state)
+		{
+		case 0:
+			my_animator->PlayIfNoSame("idle", true);
+			break;
+		case 1:
+			my_animator->PlayIfNoSame("walk", true);
+			break;
+		case 2:
+			my_animator->PlayIfNoSame("run", true);
+			break;
+		case 3:
+			my_animator->PlayIfNoSame("jump", false, 0, 0.2f, true);
+			break;
+		case 4:
+			my_animator->PlayIfNoSame("salute", false, 0, 0.2f);
+			break;
+		case 5:
+			my_animator->PlayIfNoSame("aim", true);
+			break;
+		case 6:
+			my_animator->Play("reload", false, 0);
+			break;
+		default:
+			break;
+		}
+	}
+	unsigned int SampleAnimationObject::GetCurrentAnimState()
+	{
+		if (my_animator->GetCurrentAnimName() == "idle")
+			return 0;
+		if (my_animator->GetCurrentAnimName() == "walk")
+			return 1;
+		if (my_animator->GetCurrentAnimName() == "run")
+			return 2;
+		if (my_animator->GetCurrentAnimName() == "jump")
+			return 3;
+		if (my_animator->GetCurrentAnimName() == "salute")
+			return 4;
+		if (my_animator->GetCurrentAnimName() == "aim")
+			return 5;
+		if (my_animator->GetCurrentAnimName() == "reload")
+			return 6;
+
 	}
 }

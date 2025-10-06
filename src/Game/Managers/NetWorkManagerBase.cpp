@@ -70,6 +70,7 @@ UDPNetWork* NetWorkManagerBase::OpenUDPSocket(unsigned short port)
 	//ì¬‚É¬Œ÷‚µ‚½‚çAUDPNetWork‚ğ¶¬
 	if (socket != -1) {
 		udp_network = std::make_unique<UDPNetWork>(socket, port);
+		udp_port_num = port;
 	}
 	return udp_network.get();
 }
