@@ -1,12 +1,12 @@
 ﻿#pragma once
 #include "System/Scene.h"
-namespace NetWorkTest_Server {
+namespace NetWorkTest_Client {
 
-	class NetWorkSampleScene_Server :
+	class NetWorkSampleScene_Client :
 		public Scene
 	{
 	public:
-		USING_SUPER(NetWorkSampleScene_Server);
+		USING_SUPER(NetWorkSampleScene_Client);
 		int Init() override;
 		void Update() override;
 		void LateDraw() override;

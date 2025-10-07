@@ -125,12 +125,12 @@
     <ClCompile Include="src\Game\Managers\NetWorkManager_Server.cpp" />
     <ClCompile Include="src\Game\Managers\NetWorkManager_Client.cpp" />
     <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene.cpp" />
-    <ClCompile Include="src\Audio\WinMMRecorder.cpp" />
-    <ClCompile Include="src\Audio\WinMMWavePlayer.cpp" />
     <ClCompile Include="src\System\Utils\Render.cpp" />
     <ClCompile Include="src\System\Objects\ShadowMapObject.cpp" />
     <ClCompile Include="src\Game\Scenes\SampleAnimation\SampleAnimationScene.cpp" />
     <ClCompile Include="src\Game\Objects\SampleAnimation\SampleAnimationObject.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\System\Main.h">
@@ -260,12 +260,12 @@
     <ClInclude Include="src\Game\Managers\NetWorkManager_Server.h" />
     <ClInclude Include="src\Game\Managers\NetWorkManager_Client.h" />
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene.h" />
-    <ClInclude Include="src\Audio\WinMMRecorder.h" />
-    <ClInclude Include="src\Audio\WinMMWavePlayer.h" />
     <ClInclude Include="src\System\Utils\Render.h" />
     <ClInclude Include="src\System\Objects\ShadowMapObject.h" />
     <ClInclude Include="src\Game\Scenes\SampleAnimation\SampleAnimationScene.h" />
     <ClInclude Include="src\Game\Objects\SampleAnimation\SampleAnimationObject.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="System">

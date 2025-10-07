@@ -1,4 +1,4 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 #include "SampleAnimationObject.h"
 
 #include "System/Components/ModelRenderer.h"
@@ -40,25 +40,26 @@ namespace SampleAnimation
 	{
 		if (manipulate_mode)
 			return;
-		if (Input::GetKeyDown(KeyCode::NumPad1))
+		if (Input::GetKeyDown(KeyCode::Alpha1))
 			my_animator->PlayIfNoSame("idle", true);
-		if (Input::GetKeyDown(KeyCode::NumPad2))
+		if (Input::GetKeyDown(KeyCode::Alpha2))
 			my_animator->PlayIfNoSame("walk", true);
-		if (Input::GetKeyDown(KeyCode::NumPad3))
+		if (Input::GetKeyDown(KeyCode::Alpha3))
 			my_animator->PlayIfNoSame("run", true);
-		if (Input::GetKeyDown(KeyCode::NumPad4))
+		if (Input::GetKeyDown(KeyCode::Alpha4))
 			my_animator->Play("jump", false, (my_animator->anim_speed > 0) ? 0 : (130 / 60.0f), 0.2f, true);
-		if (Input::GetKeyDown(KeyCode::NumPad5))
+		if (Input::GetKeyDown(KeyCode::Alpha5))
 			my_animator->Play("salute", false, (my_animator->anim_speed > 0) ? 0 : (170 / 60.0f), 0.2f);
-		if (Input::GetKeyDown(KeyCode::NumPad6))
+		if (Input::GetKeyDown(KeyCode::Alpha6))
 			my_animator->PlayIfNoSame("aim", true);
-		if (Input::GetKeyDown(KeyCode::NumPad7))
+		if (Input::GetKeyDown(KeyCode::Alpha7))
 			my_animator->Play("reload", false, (my_animator->anim_speed > 0) ? 0 : (200 / 60.0f));
 
+#if 0
 		if (Input::GetKeyDown(KeyCode::Return)) {
 			bool normal_play = (my_animator->anim_speed *= -1.0f) > 0;
-			//‹tÄ¶‚Ìê‡AƒAƒjƒ[ƒVƒ‡ƒ“‚ÌÅŒã‚ÌƒtƒŒ[ƒ€‚ÅŽÀs‚·‚éƒR[ƒ‹ƒoƒbƒN‚ÍA
-			//Å‰‚ÌƒtƒŒ[ƒ€‚ÉˆÚ“®‚³‚¹‚È‚¢‚Æ‚¢‚¯‚È‚¢
+			//é€†å†ç”Ÿã®å ´åˆã€ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®æœ€å¾Œã®ãƒ•ãƒ¬ãƒ¼ãƒ ã§å®Ÿè¡Œã™ã‚‹ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã¯ã€
+			//æœ€åˆã®ãƒ•ãƒ¬ãƒ¼ãƒ ã«ç§»å‹•ã•ã›ãªã„ã¨ã„ã‘ãªã„
 			std::function on_jump_finish = [=]() {my_animator->Play("idle", true, 0.0f, 1.0f); };
 			std::function on_salute_finish = [=]() {my_animator->Play("idle", true, 5.0f, 0.2f); };
 			std::function on_reload_finish = [=]() {my_animator->Play("aim", true); };
@@ -66,6 +67,7 @@ namespace SampleAnimation
 			my_animator->SetAnimationCallBack("jump", on_jump_finish, normal_play ? 130 : 0, "on_jump_finish");
 			my_animator->SetAnimationCallBack("salute", on_salute_finish, normal_play ? 170 : 0, "on_salute_finish");
 		}
+#endif
 
 
 	}
@@ -96,7 +98,7 @@ namespace SampleAnimation
 			my_animator->PlayIfNoSame("aim", true);
 			break;
 		case 6:
-			my_animator->Play("reload", false, 0);
+			my_animator->PlayIfNoSame("reload", false, 0);
 			break;
 		default:
 			break;
@@ -119,5 +121,13 @@ namespace SampleAnimation
 		if (my_animator->GetCurrentAnimName() == "reload")
 			return 6;
 
+	}
+	void SampleAnimationObject::LateDraw()
+	{
+		VECTOR pos=cast(transform->position);
+		pos.y += 10;
+		pos = DxLib::ConvWorldPosToScreenPos(pos);
+		if (pos.z > 0)
+			DrawFormatString(pos.x, pos.y, Color::BLUE, name.c_str());
 	}
 }

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "System/Scene.h"
 namespace NetWorkTest {
 
@@ -9,7 +9,7 @@ namespace NetWorkTest {
 		USING_SUPER(NetWorkSampleScene);
 		int Init() override;
 		void Update() override;
-		void Draw() override;
+		void LateDraw() override;
 		void Exit() override;
 		bool is_connected = false;
 	};

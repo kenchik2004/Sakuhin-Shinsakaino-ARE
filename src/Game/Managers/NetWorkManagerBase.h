@@ -1,23 +1,28 @@
-#pragma once
+ï»¿#pragma once
 
 #include <mutex>
 
-// ƒpƒPƒbƒgí•Ê
-//ƒpƒPƒbƒgí”‚ª‘‚¦‚½‚ç“K‹X’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢
+// ãƒ‘ã‚±ãƒƒãƒˆç¨®åˆ¥
+//ãƒ‘ã‚±ãƒƒãƒˆç¨®æ•°ãŒå¢—ãˆãŸã‚‰é©å®œè¿½åŠ ã—ã¦ãã ã•ã„
 enum PacketType : u32 {
 	PACKET_TYPE_WAVE = 0,
 	PACKET_TYPE_TEXT = 1,
 	PACKET_TYPE_PLAYER_POSITION = 2,
 	PACKET_TYPE_COMMAND = 3,
 };
+// IP -> 32bit ã‚­ãƒ¼åŒ–ï¼ˆåŒä¸€é€ä¿¡å…ƒè­˜åˆ¥ã«ä½¿ç”¨ï¼‰
+static inline u32 MakeIPKey(const IPDATA& ip) {
+	return (static_cast<u32>(ip.d1) << 24) | (static_cast<u32>(ip.d2) << 16) |
+		(static_cast<u32>(ip.d3) << 8) | static_cast<u32>(ip.d4);
+}
 
 struct PacketHeader {
 	IPDATA ip;
 	u32  type;      // PacketType
-	u32 sizeBytes; // Œã‘±ƒyƒCƒ[ƒhƒTƒCƒY
+	u32 sizeBytes; // å¾Œç¶šãƒšã‚¤ãƒ­ãƒ¼ãƒ‰ã‚µã‚¤ã‚º
 };
 
-// TCP’ÊM‚ğs‚¤‚½‚ß‚ÌƒNƒ‰ƒX
+// TCPé€šä¿¡ã‚’è¡Œã†ãŸã‚ã®ã‚¯ãƒ©ã‚¹
 class NetWork {
 public:
 	int handle = -1;
@@ -25,7 +30,7 @@ public:
 	IPDATA ip;
 	const unsigned long long unique_id;
 	std::function<void(void* data, size_t length)> on_receive;
-	std::function<void()> on_disconnect;
+	std::function<void(NetWork*)> on_disconnect;
 	void Send(const void* data, size_t data_size);
 
 	NetWork(int handle, IPDATA other_ip, unsigned long long id) :unique_id(id) {
@@ -36,12 +41,12 @@ public:
 	~NetWork();
 };
 
-// UDP’ÊM‚ğs‚¤‚½‚ß‚ÌƒNƒ‰ƒX
+// UDPé€šä¿¡ã‚’è¡Œã†ãŸã‚ã®ã‚¯ãƒ©ã‚¹
 class UDPNetWork {
 
-	//UDP’ÊM‚ÍATCP‚Æˆá‚¢AÚ‘±‚Æ‚¢‚¤ŠT”O‚ª‚È‚¢
-	//‚»‚Ì‚½‚ßAon_disconnect‚Ì‚æ‚¤‚ÈƒR[ƒ‹ƒoƒbƒN‚Í‘¶İ‚µ‚È‚¢
-	//‚Ü‚½Ahandle‚à‘¶İ‚µ‚È‚¢(ƒ\ƒPƒbƒg‚Í1‚Â‚¾‚¯)
+	//UDPé€šä¿¡ã¯ã€TCPã¨é•ã„ã€æ¥ç¶šã¨ã„ã†æ¦‚å¿µãŒãªã„
+	//ãã®ãŸã‚ã€on_disconnectã®ã‚ˆã†ãªã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã¯å­˜åœ¨ã—ãªã„
+	//ã¾ãŸã€handleã‚‚å­˜åœ¨ã—ãªã„(ã‚½ã‚±ãƒƒãƒˆã¯1ã¤ã ã‘)
 public:
 	int socket = -1;
 	unsigned short port = 0;
@@ -69,7 +74,7 @@ protected:
 	std::vector<std::unique_ptr<NetWork>> networks;
 	std::unique_ptr<UDPNetWork> udp_network;
 	std::function<void(NetWork*)> on_new_connection;
-	std::function<void()> on_disconnection;
+	std::function<void(NetWork*)> on_disconnection;
 	std::thread check_connection_thread;
 	std::thread check_disconnection_thread;
 	IPDATA my_ip = { 127,0,0,1 };
@@ -83,15 +88,15 @@ private:
 	void CheckForDisConnect(const bool& finish_flag);
 public:
 	void SetOnNewConnectionCallback(std::function<void(NetWork*)> func) { on_new_connection = func; }
-	void SetOnDisconnectionCallback(std::function<void()> func) { on_disconnection = func; }
+	void SetOnDisconnectionCallback(std::function<void(NetWork*)> func) { on_disconnection = func; }
 	void Update();
 	NetWork* Connect(IPDATA other, unsigned short port,
 		std::function<void(NetWork*)> on_connect = nullptr,
-		std::function<void()> on_disconnect = nullptr);
+		std::function<void(NetWork*)> on_disconnect = nullptr);
 	NetWorkManagerBase(int mode = 0, unsigned short port = 35000);
 	virtual ~NetWorkManagerBase() {
-		kill_thread_flag = true;	// ƒXƒŒƒbƒhI—¹ƒtƒ‰ƒO‚ğ—§‚Ä‚é
-		// ƒXƒŒƒbƒhI—¹‚Ü‚Å‘Ò‹@
+		kill_thread_flag = true;	// ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†ãƒ•ãƒ©ã‚°ã‚’ç«‹ã¦ã‚‹
+		// ã‚¹ãƒ¬ãƒƒãƒ‰çµ‚äº†ã¾ã§å¾…æ©Ÿ
 		{
 			if (check_connection_thread.joinable())
 				check_connection_thread.join();
@@ -111,7 +116,7 @@ public:
 	static constexpr int NETWORK_MANAGER_MODE_BOTH = 2;
 
 };
-// IPDATA“¯m‚Ì”äŠr(DxLib‚É‚Í‚È‚º‚©‘¶İ‚µ‚È‚¢)
+// IPDATAåŒå£«ã®æ¯”è¼ƒ(DxLibã«ã¯ãªãœã‹å­˜åœ¨ã—ãªã„)
 constexpr bool operator== (const IPDATA& lhs, const IPDATA& rhs) {
 	return (lhs.d1 == rhs.d1) && (lhs.d2 == rhs.d2) && (lhs.d3 == rhs.d3) && (lhs.d4 == rhs.d4);
 }

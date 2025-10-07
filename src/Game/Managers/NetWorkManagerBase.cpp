@@ -1,10 +1,10 @@
-#include "precompile.h"
+ï»¿#include "precompile.h"
 #include "NetWorkManagerBase.h"
 
 
 void NetWork::Send(const void* data, size_t data_size)
 {
-	//ƒnƒ“ƒhƒ‹‚ª–³Œø‚È‚ç‘—M‚µ‚È‚¢
+	//ãƒãƒ³ãƒ‰ãƒ«ãŒç„¡åŠ¹ãªã‚‰é€ä¿¡ã—ãªã„
 	if (handle != -1)
 	{
 		DxLib::NetWorkSend(handle, data, static_cast<int>(data_size));
@@ -13,11 +13,11 @@ void NetWork::Send(const void* data, size_t data_size)
 
 NetWork::~NetWork()
 {
-	//ƒnƒ“ƒhƒ‹‚ª—LŒø‚È‚çØ’f‚·‚é
+	//ãƒãƒ³ãƒ‰ãƒ«ãŒæœ‰åŠ¹ãªã‚‰åˆ‡æ–­ã™ã‚‹
 	CloseNetWork(handle);
-	//Ø’fƒR[ƒ‹ƒoƒbƒN‚ğŒÄ‚Ô
+	//åˆ‡æ–­ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’å‘¼ã¶
 	if (on_disconnect)
-		on_disconnect();
+		on_disconnect(this);
 }
 
 void UDPNetWork::Send(IPDATA ip, unsigned short port, const void* data, size_t data_size) const {
@@ -30,28 +30,28 @@ void UDPNetWork::Send(IPDATA ip, unsigned short port, const void* data, size_t d
 
 NetWorkManagerBase::NetWorkManagerBase(int mode, unsigned short port) :port_num(port)
 {
-	//ƒ‚[ƒh‚É‰‚¶‚ÄAƒŠƒbƒXƒ“‚ğŠJn‚·‚é
+	//ãƒ¢ãƒ¼ãƒ‰ã«å¿œã˜ã¦ã€ãƒªãƒƒã‚¹ãƒ³ã‚’é–‹å§‹ã™ã‚‹
 	if (mode == NETWORK_MANAGER_MODE_LISTEN || mode == NETWORK_MANAGER_MODE_BOTH)
 	{
 
 		int result = DxLib::PreparationListenNetWork(port_num);
-		//¸”s‚Ìê‡AI—¹
+		//å¤±æ•—ã®å ´åˆã€çµ‚äº†
 		if (result == -1)
 		{
 			return;
 		}
 	}
-	//©•ª‚ÌIPƒAƒhƒŒƒX‚ğæ“¾
+	//è‡ªåˆ†ã®IPã‚¢ãƒ‰ãƒ¬ã‚¹ã‚’å–å¾—
 	DxLib::GetMyIPAddress(&my_ip);
 
-	//V‹KÚ‘±‚ÆØ’f‚ğŠÄ‹‚·‚éƒXƒŒƒbƒh‚ğ‹N“®
-	//V‹KÚ‘±ŒŸoƒXƒŒƒbƒh
+	//æ–°è¦æ¥ç¶šã¨åˆ‡æ–­ã‚’ç›£è¦–ã™ã‚‹ã‚¹ãƒ¬ãƒƒãƒ‰ã‚’èµ·å‹•
+	//æ–°è¦æ¥ç¶šæ¤œå‡ºã‚¹ãƒ¬ãƒƒãƒ‰
 	auto check_connection_lambda = [this]() {
 		CheckForNewConnect(kill_thread_flag);
 		};
 	check_connection_thread = std::thread(check_connection_lambda);
 
-	//Ø’fŒŸoƒXƒŒƒbƒh
+	//åˆ‡æ–­æ¤œå‡ºã‚¹ãƒ¬ãƒƒãƒ‰
 	auto check_disconnection_lambda = [this]() {
 		CheckForDisConnect(kill_thread_flag);
 		};
@@ -59,15 +59,15 @@ NetWorkManagerBase::NetWorkManagerBase(int mode, unsigned short port) :port_num(
 
 }
 
-// V‚µ‚­UDPƒ\ƒPƒbƒg‚ğŠJ‚­
+// æ–°ã—ãUDPã‚½ã‚±ãƒƒãƒˆã‚’é–‹ã
 UDPNetWork* NetWorkManagerBase::OpenUDPSocket(unsigned short port)
 {
 	if (udp_network)
-		return nullptr; // Šù‚ÉŠJ‚¢‚Ä‚¢‚é
+		return nullptr; // æ—¢ã«é–‹ã„ã¦ã„ã‚‹
 
-	//UDPƒ\ƒPƒbƒg‚ğì¬
+	//UDPã‚½ã‚±ãƒƒãƒˆã‚’ä½œæˆ
 	int socket = DxLib::MakeUDPSocket(port);
-	//ì¬‚É¬Œ÷‚µ‚½‚çAUDPNetWork‚ğ¶¬
+	//ä½œæˆã«æˆåŠŸã—ãŸã‚‰ã€UDPNetWorkã‚’ç”Ÿæˆ
 	if (socket != -1) {
 		udp_network = std::make_unique<UDPNetWork>(socket, port);
 		udp_port_num = port;
@@ -94,46 +94,46 @@ std::vector<char> NetWorkManagerBase::CreatePacket(PacketType type, const void* 
 
 void NetWorkManagerBase::Update()
 {
-	//‘SÚ‘±‚É‘Î‚µ‚ÄAóMƒf[ƒ^‚ª‚ ‚ê‚ÎóM‚·‚é
-	//•ÊƒXƒŒƒbƒh‚ÅV‹KÚ‘±‚ª‚ ‚Á‚½ê‡Avector‚Ì—v‘f‚ª‘‚¦‚Ä‚µ‚Ü‚¤
-	//‚»‚ÌÛ‚ÌƒCƒeƒŒ[ƒ^‚Ì”j‰ó‚ğ–h‚®‚½‚ßAƒƒbƒN‚ğ‚©‚¯‚é
+	//å…¨æ¥ç¶šã«å¯¾ã—ã¦ã€å—ä¿¡ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚Œã°å—ä¿¡ã™ã‚‹
+	//åˆ¥ã‚¹ãƒ¬ãƒƒãƒ‰ã§æ–°è¦æ¥ç¶šãŒã‚ã£ãŸå ´åˆã€vectorã®è¦ç´ ãŒå¢—ãˆã¦ã—ã¾ã†
+	//ãã®éš›ã®ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã®ç ´å£Šã‚’é˜²ããŸã‚ã€ãƒ­ãƒƒã‚¯ã‚’ã‹ã‘ã‚‹
 	if (udp_network) {
-		//UDPƒ\ƒPƒbƒg‚É‘Î‚µ‚Ä‚à“¯—l‚ÉóM‚ğs‚¤
+		//UDPã‚½ã‚±ãƒƒãƒˆã«å¯¾ã—ã¦ã‚‚åŒæ§˜ã«å—ä¿¡ã‚’è¡Œã†
 		int data_arrived = DxLib::CheckNetWorkRecvUDP(udp_network->socket);
 		bool break_flag = false;
 		int data_size = 0;
 		while (data_arrived > 0 || !break_flag) {
 			IPDATA from_ip;
 			int from_port;
-			//óM‚µ‚½ƒf[ƒ^‚ğóMƒoƒbƒtƒ@‚É“Ç‚İ‚Ş
-			//Œ‹‰Ê‚ÍƒLƒƒƒbƒVƒ…‚µ‚Ä‚¨‚­
+			//å—ä¿¡ã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’å—ä¿¡ãƒãƒƒãƒ•ã‚¡ã«èª­ã¿è¾¼ã‚€
+			//çµæœã¯ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã—ã¦ãŠã
 			int result = DxLib::NetWorkRecvUDP(udp_network->socket, &from_ip, &from_port, udp_network->buffer.data() + data_size, udp_network->buffer.size() - data_size, false);
 
 			switch (result) {
 			case -1:
-				//ƒGƒ‰[‚Ìê‡A‰½‚à‚µ‚È‚¢
-				//¦–{—ˆ‚ÍƒGƒ‰[“à—e‚É‰‚¶‚½ˆ—‚ª•K—v
+				//ã‚¨ãƒ©ãƒ¼ã®å ´åˆã€ä½•ã‚‚ã—ãªã„
+				//â€»æœ¬æ¥ã¯ã‚¨ãƒ©ãƒ¼å†…å®¹ã«å¿œã˜ãŸå‡¦ç†ãŒå¿…è¦
 				break_flag = true;
 				break;
 			case -2:
-				//ƒoƒbƒtƒ@‚ª‘«‚è‚È‚¢ê‡A‰¼À‘•‚Æ‚µ‚Äƒoƒbƒtƒ@‚ğƒNƒŠƒA‚µ‚ÄóMƒf[ƒ^‚ğ”jŠü‚·‚é
-				//¦‚µ‚á‚ ‚È‚µ‚Å‚â‚Á‚Ä‚é‚Ì‚ÅA–{—ˆ‚Í—Ç‚­‚È‚¢
+				//ãƒãƒƒãƒ•ã‚¡ãŒè¶³ã‚Šãªã„å ´åˆã€ä»®å®Ÿè£…ã¨ã—ã¦ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢ã—ã¦å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚’ç ´æ£„ã™ã‚‹
+				//â€»ã—ã‚ƒã‚ãªã—ã§ã‚„ã£ã¦ã‚‹ã®ã§ã€æœ¬æ¥ã¯è‰¯ããªã„
 				DxLib::NetWorkRecvBufferClear(udp_network->socket);
 				break_flag = true;
 				break;
 			case -3:
-				//óMƒf[ƒ^‚ª‚È‚¢ê‡Aƒ‹[ƒv‚ğ”²‚¯‚é
+				//å—ä¿¡ãƒ‡ãƒ¼ã‚¿ãŒãªã„å ´åˆã€ãƒ«ãƒ¼ãƒ—ã‚’æŠœã‘ã‚‹
 				break_flag = true;
 				break;
 			default:
-				//¬Œ÷‚µ‚½ê‡Aresult‚ÉóMƒf[ƒ^‚ÌƒTƒCƒY‚ª“ü‚Á‚Ä‚¢‚é
+				//æˆåŠŸã—ãŸå ´åˆã€resultã«å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã®ã‚µã‚¤ã‚ºãŒå…¥ã£ã¦ã„ã‚‹
 				data_size += result;
 				break;
 			}
 			data_arrived = DxLib::CheckNetWorkRecvUDP(udp_network->socket);
 
 		}
-		//ƒf[ƒ^‚Ì“à—e‚Í—lX‚È‚Ì‚ÅAƒR[ƒ‹ƒoƒbƒN‚É”C‚¹‚é
+		//ãƒ‡ãƒ¼ã‚¿ã®å†…å®¹ã¯æ§˜ã€…ãªã®ã§ã€ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã«ä»»ã›ã‚‹
 		if (udp_network->on_receive)
 			udp_network->on_receive(udp_network->buffer.data(), static_cast<size_t>(data_size));
 	}
@@ -142,32 +142,32 @@ void NetWorkManagerBase::Update()
 		if (net->handle == -1)
 			continue;
 
-		//óMÏ‚İ‚¾‚ªU‚è•ª‚¯‚ªI‚í‚Á‚Ä‚¢‚È‚¢ƒf[ƒ^‚Ì—Ê‚ğæ“¾
+		//å—ä¿¡æ¸ˆã¿ã ãŒæŒ¯ã‚Šåˆ†ã‘ãŒçµ‚ã‚ã£ã¦ã„ãªã„ãƒ‡ãƒ¼ã‚¿ã®é‡ã‚’å–å¾—
 		int recv_size = DxLib::GetNetWorkDataLength(net->handle);
-		//óMƒf[ƒ^‚ª‚ ‚éA‚©‚Âƒoƒbƒtƒ@‚Ì—e—Ê‚Éû‚Ü‚é‚È‚çƒoƒbƒtƒ@‚ÉU‚è•ª‚¯
+		//å—ä¿¡ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚‹ã€ã‹ã¤ãƒãƒƒãƒ•ã‚¡ã®å®¹é‡ã«åã¾ã‚‹ãªã‚‰ãƒãƒƒãƒ•ã‚¡ã«æŒ¯ã‚Šåˆ†ã‘
 		if (recv_size > 0 && recv_size < net->buffer.size()) {
-			//óM‚µ‚½ƒf[ƒ^‚ğóMƒoƒbƒtƒ@‚É“Ç‚İ‚Ş
+			//å—ä¿¡ã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’å—ä¿¡ãƒãƒƒãƒ•ã‚¡ã«èª­ã¿è¾¼ã‚€
 			DxLib::NetWorkRecv(net->handle, net->buffer.data(), recv_size);
 
-			//ƒf[ƒ^‚Ì“à—e‚Í—lX‚È‚Ì‚ÅAƒR[ƒ‹ƒoƒbƒN‚É”C‚¹‚é
+			//ãƒ‡ãƒ¼ã‚¿ã®å†…å®¹ã¯æ§˜ã€…ãªã®ã§ã€ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã«ä»»ã›ã‚‹
 			if (net->on_receive)
 				net->on_receive(net->buffer.data(), static_cast<size_t>(recv_size));
 		}
-		//óMƒf[ƒ^‚ª‚ ‚é‚ªƒoƒbƒtƒ@‚Éû‚Ü‚ç‚È‚¢ê‡
+		//å—ä¿¡ãƒ‡ãƒ¼ã‚¿ãŒã‚ã‚‹ãŒãƒãƒƒãƒ•ã‚¡ã«åã¾ã‚‰ãªã„å ´åˆ
 		else if (recv_size > net->buffer.size()) {
-			//‰¼À‘•‚Æ‚µ‚ÄAóMƒoƒbƒtƒ@‚ğƒNƒŠƒA‚µ‚ÄóMƒf[ƒ^‚ğ”jŠü‚·‚é
+			//ä»®å®Ÿè£…ã¨ã—ã¦ã€å—ä¿¡ãƒãƒƒãƒ•ã‚¡ã‚’ã‚¯ãƒªã‚¢ã—ã¦å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚’ç ´æ£„ã™ã‚‹
 			{
 				DxLib::NetWorkRecvBufferClear(net->handle);
 				continue;
 			}
-			//–{—ˆ‚ÍAƒoƒbƒtƒ@‚ğ“®“I‚ÉŠm•Û‚µ’¼‚·A‚à‚µ‚­‚Íæ‚ê‚é•ª‚¾‚¯æ‚é‚È‚Ç‚Ìˆ—‚ª•K—v
-			//‚Æ‚è‚ ‚¦‚¸A¡‰ñ‚Å‚Íæ‚ê‚é•ª‚¾‚¯æ‚é
-			//¦ƒf[ƒ^‚Ì“r’†‚ÅØ‚ê‚Ä‚µ‚Ü‚¤‰Â”\«‚ª‚ ‚é‚Ì‚ÅAŠëŒ¯->—v‰ü‘P
+			//æœ¬æ¥ã¯ã€ãƒãƒƒãƒ•ã‚¡ã‚’å‹•çš„ã«ç¢ºä¿ã—ç›´ã™ã€ã‚‚ã—ãã¯å–ã‚Œã‚‹åˆ†ã ã‘å–ã‚‹ãªã©ã®å‡¦ç†ãŒå¿…è¦
+			//ã¨ã‚Šã‚ãˆãšã€ä»Šå›ã§ã¯å–ã‚Œã‚‹åˆ†ã ã‘å–ã‚‹
+			//â€»ãƒ‡ãƒ¼ã‚¿ã®é€”ä¸­ã§åˆ‡ã‚Œã¦ã—ã¾ã†å¯èƒ½æ€§ãŒã‚ã‚‹ã®ã§ã€å±é™º->è¦æ”¹å–„
 
 
 			recv_size = net->buffer.size();
 			DxLib::NetWorkRecv(net->handle, net->buffer.data(), recv_size);
-			//ƒf[ƒ^‚Ì“à—e‚Í—lX‚È‚Ì‚ÅAƒR[ƒ‹ƒoƒbƒN‚É”C‚¹‚é
+			//ãƒ‡ãƒ¼ã‚¿ã®å†…å®¹ã¯æ§˜ã€…ãªã®ã§ã€ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã«ä»»ã›ã‚‹
 			if (net->on_receive)
 				net->on_receive(net->buffer.data(), static_cast<size_t>(recv_size));
 
@@ -177,25 +177,25 @@ void NetWorkManagerBase::Update()
 
 }
 
-// V‹KÚ‘±‚ğŒŸo‚µ‚ÄAŠÇ—‰º‚É’u‚­
+// æ–°è¦æ¥ç¶šã‚’æ¤œå‡ºã—ã¦ã€ç®¡ç†ä¸‹ã«ç½®ã
 void NetWorkManagerBase::CheckForNewConnect(const bool& finish_flag)
 {
-	//•ÊƒXƒŒƒbƒh‚É‚µ‚ÄAí‚ÉV‹KÚ‘±‚ğŠÄ‹‚·‚é
+	//åˆ¥ã‚¹ãƒ¬ãƒƒãƒ‰ã«ã—ã¦ã€å¸¸ã«æ–°è¦æ¥ç¶šã‚’ç›£è¦–ã™ã‚‹
 	while (!finish_flag) {
-		//V‹KÚ‘±‚ğæ“¾
+		//æ–°è¦æ¥ç¶šã‚’å–å¾—
 		int new_handle = DxLib::GetNewAcceptNetWork();
 
-		//‚à‚µV‹KÚ‘±‚ª‚ ‚ê‚ÎAŠÇ—‰º‚É’u‚­
+		//ã‚‚ã—æ–°è¦æ¥ç¶šãŒã‚ã‚Œã°ã€ç®¡ç†ä¸‹ã«ç½®ã
 		if (new_handle >= 0)
 		{
 			IPDATA other_ip;
-			//Ú‘±æ‚ÌIP‚ğæ“¾
+			//æ¥ç¶šå…ˆã®IPã‚’å–å¾—
 			DxLib::GetNetWorkIP(new_handle, &other_ip);
 
-			//unique_ptr‚Åì¬->ƒ}ƒl[ƒWƒƒ‚ªŠÇ—
-			auto net = std::make_unique<NetWork>(new_handle, other_ip, static_cast<unsigned int>(SEC2MICRO(Time::GetTimeFromStart())));
+			//unique_ptrã§ä½œæˆ->ãƒãƒãƒ¼ã‚¸ãƒ£ãŒç®¡ç†
+			auto net = std::make_unique<NetWork>(new_handle, other_ip, MakeIPKey(other_ip));
 
-			//Ú‘±‰ğœ‚ÌƒfƒtƒHƒ‹ƒgƒR[ƒ‹ƒoƒbƒN‚ğİ’è(‚±‚¿‚ç‚ÍŠî–{‘‚«Š·‚¦‚ª•s‰Â”\)
+			//æ¥ç¶šè§£é™¤æ™‚ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’è¨­å®š(ã“ã¡ã‚‰ã¯åŸºæœ¬æ›¸ãæ›ãˆãŒä¸å¯èƒ½)
 			net->on_disconnect = on_disconnection;
 
 			{
@@ -206,78 +206,78 @@ void NetWorkManagerBase::CheckForNewConnect(const bool& finish_flag)
 			}
 
 		}
-		//³’¼ACPU•‰‰×‚ğ‰º‚°‚é‚½‚ß‚É­‚µ‹x‚Ü‚¹‚½‚¢B‚æ‚µA‹x‚Ü‚¹‚æ‚¤
+		//æ­£ç›´ã€CPUè² è·ã‚’ä¸‹ã’ã‚‹ãŸã‚ã«å°‘ã—ä¼‘ã¾ã›ãŸã„ã€‚ã‚ˆã—ã€ä¼‘ã¾ã›ã‚ˆã†
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 
-// Ø’f‚³‚ê‚½Ú‘±‚ğŒŸo‚µ‚ÄAŠÇ—‰º‚©‚çŠO‚·
+// åˆ‡æ–­ã•ã‚ŒãŸæ¥ç¶šã‚’æ¤œå‡ºã—ã¦ã€ç®¡ç†ä¸‹ã‹ã‚‰å¤–ã™
 void NetWorkManagerBase::CheckForDisConnect(const bool& finish_flag)
 {
-	//•ÊƒXƒŒƒbƒh‚É‚µ‚ÄAí‚ÉØ’f‚ğŠÄ‹‚·‚é
+	//åˆ¥ã‚¹ãƒ¬ãƒƒãƒ‰ã«ã—ã¦ã€å¸¸ã«åˆ‡æ–­ã‚’ç›£è¦–ã™ã‚‹
 	while (!finish_flag) {
-		//Ø’f‚³‚ê‚½Ú‘±‚ğæ“¾
+		//åˆ‡æ–­ã•ã‚ŒãŸæ¥ç¶šã‚’å–å¾—
 		int lost_handle = DxLib::GetLostNetWork();
 
-		//‚à‚µØ’f‚³‚ê‚½Ú‘±‚ª‚ ‚ê‚ÎAŠÇ—‰º‚©‚çŠO‚·
+		//ã‚‚ã—åˆ‡æ–­ã•ã‚ŒãŸæ¥ç¶šãŒã‚ã‚Œã°ã€ç®¡ç†ä¸‹ã‹ã‚‰å¤–ã™
 		if (lost_handle >= 0)
 		{
-			//ƒCƒeƒŒ[ƒ^‚Ì”j‰ó‚ğ–h‚®‚½‚ßAƒƒbƒN‚ğ‚©‚¯‚é
+			//ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ã®ç ´å£Šã‚’é˜²ããŸã‚ã€ãƒ­ãƒƒã‚¯ã‚’ã‹ã‘ã‚‹
 			std::scoped_lock lock(mutex_);
 
-			//vector‚©‚çŠY“–‚·‚éÚ‘±‚ğ’T‚·
+			//vectorã‹ã‚‰è©²å½“ã™ã‚‹æ¥ç¶šã‚’æ¢ã™
 			auto it = std::find_if(networks.begin(), networks.end(),
 				[lost_handle](const std::unique_ptr<NetWork>& net) {
 					return net->handle == lost_handle;
 				});
 
-			//Œ©‚Â‚©‚Á‚½‚çíœ
+			//è¦‹ã¤ã‹ã£ãŸã‚‰å‰Šé™¤
 			if (it != networks.end()) {
 				networks.erase(it);
 			}
 		}
-		//³’¼ACPU•‰‰×‚ğ‰º‚°‚é‚½‚ß‚É­‚µ‹x‚Ü‚¹‚½‚¢B‚æ‚µA‹x‚Ü‚¹‚æ‚¤
+		//æ­£ç›´ã€CPUè² è·ã‚’ä¸‹ã’ã‚‹ãŸã‚ã«å°‘ã—ä¼‘ã¾ã›ãŸã„ã€‚ã‚ˆã—ã€ä¼‘ã¾ã›ã‚ˆã†
 		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 }
 
 NetWork* NetWorkManagerBase::Connect(IPDATA other, unsigned short port,
 	std::function<void(NetWork*)> on_connect,
-	std::function<void()> on_disconnect)
+	std::function<void(NetWork*)> on_disconnect)
 {
-	//V‚½‚É‚±‚¿‚ç‚©‚çÚ‘±‚ğs‚¤
+	//æ–°ãŸã«ã“ã¡ã‚‰ã‹ã‚‰æ¥ç¶šã‚’è¡Œã†
 	int handle = DxLib::ConnectNetWork(other, port);
 
-	//¸”s
+	//å¤±æ•—
 	if (handle == -1)
 		return nullptr;
-	//¬Œ÷
-	//unique_ptr‚Åì¬->ƒ}ƒl[ƒWƒƒ‚ªŠÇ—
-	auto net = std::make_unique<NetWork>(handle, other, SEC2MICRO(Time::GetTimeFromStart()));
+	//æˆåŠŸ
+	//unique_ptrã§ä½œæˆ->ãƒãƒãƒ¼ã‚¸ãƒ£ãŒç®¡ç†
+	auto net = std::make_unique<NetWork>(handle, other, MakeIPKey(other));
 
-	//Ú‘±‰ğœ‚ÌƒfƒtƒHƒ‹ƒgƒR[ƒ‹ƒoƒbƒN‚ğİ’è
-	//ˆø”‚Åw’è‚³‚ê‚Ä‚¢‚ê‚Î‚»‚¿‚ç‚ğ—Dæ
+	//æ¥ç¶šè§£é™¤æ™‚ã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’è¨­å®š
+	//å¼•æ•°ã§æŒ‡å®šã•ã‚Œã¦ã„ã‚Œã°ãã¡ã‚‰ã‚’å„ªå…ˆ
 	net->on_disconnect = on_disconnect ? on_disconnect : this->on_disconnection;
 
-	//move‚µ‚Ä‚µ‚Ü‚Á‚Ä‚Í•Ô‚¹‚È‚¢‚Ì‚ÅA¶ƒ|ƒCƒ“ƒ^‚ğƒLƒƒƒbƒVƒ…
+	//moveã—ã¦ã—ã¾ã£ã¦ã¯è¿”ã›ãªã„ã®ã§ã€ç”Ÿãƒã‚¤ãƒ³ã‚¿ã‚’ã‚­ãƒ£ãƒƒã‚·ãƒ¥
 	NetWork* ret = net.get();
-	//Ú‘±¬Œ÷ƒR[ƒ‹ƒoƒbƒN‚ğŒÄ‚Ô
-	//ˆø”‚Åw’è‚³‚ê‚Ä‚¢‚ê‚Î‚»‚¿‚ç‚ğ—Dæ
+	//æ¥ç¶šæˆåŠŸã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ã‚’å‘¼ã¶
+	//å¼•æ•°ã§æŒ‡å®šã•ã‚Œã¦ã„ã‚Œã°ãã¡ã‚‰ã‚’å„ªå…ˆ
 	if (on_connect)
 		on_connect(ret);
 	else if (on_new_connection)
 		on_new_connection(ret);
-	//ƒ}ƒl[ƒWƒƒ‚ÌŠÇ—‰º‚É’u‚­
+	//ãƒãƒãƒ¼ã‚¸ãƒ£ã®ç®¡ç†ä¸‹ã«ç½®ã
 	{
 		std::scoped_lock lock(mutex_);
-		//vector‚ÌƒCƒeƒŒ[ƒ^‚ª‰ó‚ê‚Ä‚µ‚Ü‚¤‚Æ‚¢‚¯‚È‚¢‚Ì‚ÅAƒƒbƒN‚ğ‚©‚¯‚é
-		//‚½‚¾‚µAƒR[ƒ‹ƒoƒbƒN’†‚É‘¼‚Ìƒ}ƒVƒ“‚ÉÚ‘±‚·‚é‚È‚Ç‚Æ‚¢‚¤‚±‚Æ‚à‚ ‚è“¾‚é‚Ì‚ÅA
-		//ƒR[ƒ‹ƒoƒbƒN‘O‚ÉƒƒbƒN‚ğ‚©‚¯‚é‚Ì‚Í”ğ‚¯‚é
+		//vectorã®ã‚¤ãƒ†ãƒ¬ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã—ã¾ã†ã¨ã„ã‘ãªã„ã®ã§ã€ãƒ­ãƒƒã‚¯ã‚’ã‹ã‘ã‚‹
+		//ãŸã ã—ã€ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯ä¸­ã«ä»–ã®ãƒã‚·ãƒ³ã«æ¥ç¶šã™ã‚‹ãªã©ã¨ã„ã†ã“ã¨ã‚‚ã‚ã‚Šå¾—ã‚‹ã®ã§ã€
+		//ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯å‰ã«ãƒ­ãƒƒã‚¯ã‚’ã‹ã‘ã‚‹ã®ã¯é¿ã‘ã‚‹
 
-		//vector‚É“o˜^
+		//vectorã«ç™»éŒ²
 		networks.push_back(std::move(net));
 	}
-	//ƒLƒƒƒbƒVƒ…‚µ‚Ä‚¨‚¢‚½ƒ|ƒCƒ“ƒ^‚ğ•Ô‚·
+	//ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã—ã¦ãŠã„ãŸãƒã‚¤ãƒ³ã‚¿ã‚’è¿”ã™
 	return ret;
 }
 

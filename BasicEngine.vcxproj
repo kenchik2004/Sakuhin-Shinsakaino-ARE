@@ -35,8 +35,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Audio\WinMMRecorder.cpp" />
-    <ClCompile Include="src\Audio\WinMMWavePlayer.cpp" />
     <ClCompile Include="src\Float2.cpp" />
     <ClCompile Include="src\Float3.cpp" />
     <ClCompile Include="src\Game\Managers\InputManager.cpp" />
@@ -62,6 +60,8 @@
     <ClCompile Include="src\Game\Objects\SampleAnimation\SampleAnimationObject.cpp" />
     <ClCompile Include="src\Game\Scenes\AmeGame\SceneAme.cpp" />
     <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.cpp" />
+    <ClCompile Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.cpp" />
     <ClCompile Include="src\Game\Scenes\RLyeh\DiceScene.cpp" />
     <ClCompile Include="src\Game\Scenes\RLyeh\SceneTitle.cpp" />
     <ClCompile Include="src\Game\Scenes\SampleAnimation\SampleAnimationScene.cpp" />
@@ -109,8 +109,6 @@
     <ClCompile Include="src\System\Utils\Render.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Audio\WinMMRecorder.h" />
-    <ClInclude Include="src\Audio\WinMMWavePlayer.h" />
     <ClInclude Include="src\Float2.h" />
     <ClInclude Include="src\Float3.h" />
     <ClInclude Include="src\Game\Managers\InputManager.h" />
@@ -136,6 +134,8 @@
     <ClInclude Include="src\Game\Objects\SampleAnimation\SampleAnimationObject.h" />
     <ClInclude Include="src\Game\Scenes\AmeGame\SceneAme.h" />
     <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Client.h" />
+    <ClInclude Include="src\Game\Scenes\NetWork\NetWorkSampleScene_Server.h" />
     <ClInclude Include="src\Game\Scenes\RLyeh\DiceScene.h" />
     <ClInclude Include="src\Game\Scenes\RLyeh\SceneTitle.h" />
     <ClInclude Include="src\Game\Scenes\SampleAnimation\SampleAnimationScene.h" />

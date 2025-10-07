@@ -1,5 +1,5 @@
 ﻿#include "precompile.h"
-#include "NetWorkSampleScene.h"
+#include "NetWorkSampleScene_Client.h"
 #include "Game/Managers/NetWorkManagerBase.h"
 #include <filesystem>
 #include <fstream>
@@ -11,8 +11,7 @@
 #include "Game/Objects/SampleAnimation/SampleAnimationObject.h"
 #include "System/Objects/CameraObject.h"
 
-#define SERVER
-namespace NetWorkTest {
+namespace NetWorkTest_Client {
 
 	std::unique_ptr<NetWorkManagerBase> net_manager;
 	std::vector<NetWork*> vchat_network;
@@ -249,14 +248,7 @@ namespace NetWorkTest {
 				else
 					txt->second.assign(reinterpret_cast<char*>(payload),
 						reinterpret_cast<char*>(payload) + hdr->sizeBytes);
-#ifdef SERVER
-				for (int i = 0; i < vchat_network.size(); i++) {
-					auto net = vchat_network[i];
-					if (hdr->ip != net->ip)
-						SendPacket(net, PACKET_TYPE_TEXT, payload,
-							hdr->sizeBytes, hdr->ip);
-				}
-#endif
+
 				break;
 			}
 			case PACKET_TYPE_PLAYER_POSITION: {
@@ -287,7 +279,7 @@ namespace NetWorkTest {
 
 
 
-	int NetWorkSampleScene::Init()
+	int NetWorkSampleScene_Client::Init()
 	{
 
 		ModelManager::LoadAsModel("data/player/model.mv1", "player_model");
@@ -300,21 +292,13 @@ namespace NetWorkTest {
 		ModelManager::LoadAsAnimation("data/player/anim_reload.mv1", "reload");
 		AudioManager::Load("data/Sound/reload.mp3", "reload_se", false);
 
-#ifndef SERVER
 		net_manager = std::make_unique<NetWorkManagerBase>(NetWorkManagerBase::NETWORK_MANAGER_MODE_CONNECT, 11451);
 		udp_network = net_manager->OpenUDPSocket(11453); // 必要に応じて UDP も開く
 		if (udp_network)
 			udp_network->on_receive = [](void* data, size_t length) {
 			ProcessReceivedUDPBytes(reinterpret_cast<u8*>(data), length);
 			};
-#else
-		net_manager = std::make_unique<NetWorkManagerBase>(NetWorkManagerBase::NETWORK_MANAGER_MODE_LISTEN, 11451);
-		udp_network = net_manager->OpenUDPSocket(11453); // 必要に応じて UDP も開く
-		if (udp_network)
-			udp_network->on_receive = [](void* data, size_t length) {
-			ProcessReceivedUDPBytes(reinterpret_cast<u8*>(data), length);
-			};
-#endif // SERVER
+
 		player = SceneManager::Object::Create<SampleAnimation::SampleAnimationObject>("You");
 		SceneManager::Object::Create<CameraObject>()->transform->position = { 0,10,-10 };
 
@@ -338,12 +322,11 @@ namespace NetWorkTest {
 		return 0;
 	}
 
-	void NetWorkSampleScene::Update()
+	void NetWorkSampleScene_Client::Update()
 	{
 		net_manager->Update();
 
 
-#ifndef SERVER
 		if (Input::GetKeyDown(KeyCode::Space) && !is_connected)
 		{
 			if (udp_network) {
@@ -363,7 +346,6 @@ namespace NetWorkTest {
 
 			}
 		}
-#endif
 
 		// テキスト送信（例: 毎フレーム送ると帯域を圧迫するため、実運用ではイベント駆動推奨）
 		if (is_connected) {
@@ -385,7 +367,6 @@ namespace NetWorkTest {
 				send_text.clear();
 			}
 		}
-#ifndef SERVER 
 		else {
 			while (char ch = DxLib::GetInputChar(true)) {
 
@@ -416,7 +397,6 @@ namespace NetWorkTest {
 				send_text.clear();
 			}
 		}
-#endif // !SERVER
 
 		if (udp_network) {
 			if (Input::GetKey(KeyCode::Up))
@@ -427,53 +407,21 @@ namespace NetWorkTest {
 				player->transform->position.x -= 10.0f * Time::DeltaTime();
 			if (Input::GetKey(KeyCode::Right))
 				player->transform->position.x += 10.0f * Time::DeltaTime();
-#ifdef SERVER
-			// サーバーは接続中の全クライアントに送信 -> いわゆるブロードキャスト
-			//権威サーバ方式では、クライアントの位置情報をサーバーが集約して、全クライアントに配信する
-			//ここでもし、サーバに接続してきたクライアントのIPアドレスも配信した場合、
-			//クライアントは、他のクライアントのIPアドレスを知ることができる
-			//ただしそのやり方はマッチングサーバも兼ねる事になるので、権威サーバ方式にするメリットが薄れる
 
-			for (auto& pos : another_players) {
-				IPDATA sender_ip = MakeIPFromKey(pos.first);
-
-				// 自分の位置情報は送らない
-				std::for_each(another_players.begin(), another_players.end(),
-					[&](const auto& p) {
-						if (p.first != pos.first) {
-							PlayerData pd;
-							pd.position = p.second->transform->position;
-							pd.anim_state = p.second->GetCurrentAnimState();
-							SendPacket(udp_network, sender_ip, another_port, PACKET_TYPE_PLAYER_POSITION, &pd, sizeof(PlayerData), MakeIPFromKey(p.first));
-						}
-					});
-				PlayerData pd;
-				pd.position = player->transform->position;
-				pd.anim_state = player->GetCurrentAnimState();
-				SendPacket(udp_network, sender_ip, another_port, PACKET_TYPE_PLAYER_POSITION, &pd, sizeof(PlayerData));
-			}
-
-
-
-			//			SendPacket(udp_network, { 192,168,0,104 }, 11452, PACKET_TYPE_PLAYER_POSITION, &player_position, sizeof(Vector3));
-#else
 			PlayerData pd;
 			pd.position = player->transform->position;
 			pd.anim_state = player->GetCurrentAnimState();
 
 			SendPacket(udp_network, another_ip, another_port, PACKET_TYPE_PLAYER_POSITION, &pd, sizeof(PlayerData));
-#endif // SERVER
+
 
 		}
 	}
 
-	void NetWorkSampleScene::LateDraw()
+	void NetWorkSampleScene_Client::LateDraw()
 	{
-#ifdef SERVER
-		DxLib::DrawString(100, 50, "Server Mode", 0xffff00);
-#else
+
 		DxLib::DrawString(100, 50, "Client Mode", 0xffff00);
-#endif // SERVER
 
 
 
@@ -504,7 +452,7 @@ namespace NetWorkTest {
 		DrawFormatString(600, 30, Color::WHITE, "Open Ports  TCP:%d,UDP:%d", net_manager->GetPort(), net_manager->GetUDPPort());
 	}
 
-	void NetWorkSampleScene::Exit()
+	void NetWorkSampleScene_Client::Exit()
 	{
 
 		another_players.clear();
